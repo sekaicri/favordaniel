@@ -1,0 +1,20 @@
+name: Emergency Restart
+on:
+  push:
+    branches:
+      - restart-server
+
+jobs:
+  restart:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restart Docker Containers
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 147.93.47.125
+          username: root
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cd /var/www/favordaniel
+            docker compose restart
+            echo "Restart ejecutado OK"
