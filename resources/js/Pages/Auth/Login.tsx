@@ -1,9 +1,30 @@
 import InputError from '@/Components/InputError';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useEffect, useState } from 'react';
 
 export default function Login({ status, canResetPassword }: { status?: string; canResetPassword?: boolean }) {
     const { data, setData, post, processing, errors, reset } = useForm({ email: '', password: '', remember: false });
+
+    const [recentUsers, setRecentUsers] = useState<any[]>([]);
+
+    useEffect(() => {
+        const saved = localStorage.getItem('recent_celuworkers');
+        if (saved) {
+            setRecentUsers(JSON.parse(saved));
+        }
+    }, []);
+
+    const removeRecent = (email: string) => {
+        const filtered = recentUsers.filter(u => u.email !== email);
+        setRecentUsers(filtered);
+        localStorage.setItem('recent_celuworkers', JSON.stringify(filtered));
+    };
+
+    const selectRecent = (user: any) => {
+        setData('email', user.email);
+        // Focus password field automatically
+        document.getElementById('password')?.focus();
+    };
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -70,23 +91,28 @@ export default function Login({ status, canResetPassword }: { status?: string; c
 
 
                         {/* User cards — anchored just below the pink/white boundary */}
-                        <div className="users-section" style={{ position:'absolute', top:'56%', left:68 }}>
-                            <p style={{ fontFamily:"'Poppins',sans-serif", fontWeight:600, fontSize:15, color:'#333', marginBottom:16 }}>Inicia sesión como:</p>
-                            <div style={{ display:'flex', gap:20 }}>
-                                <div className="ucard" onClick={() => { setData('email', 'ricolas@celumovil.com'); setData('password', 'password123'); }}>
-                                    <span style={{ position:'absolute', top:8, right:8, fontSize:14, color:'#aaa' }}>&times;</span>
-                                    <div style={{ width:54, height:54, borderRadius:'50%', background:'#fff', boxShadow:'0 4px 10px rgba(0,0,0,.08)', marginBottom:12, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Poppins',sans-serif", fontWeight:600, fontSize:20, color:'#E72380' }}>RB</div>
-                                    <p style={{ fontFamily:"'Poppins',sans-serif", fontWeight:700, fontSize:13, color:'#111', textAlign:'center', lineHeight:1.2, marginBottom:4 }}>Ricolas Bolivar</p>
-                                    <p style={{ fontFamily:"'Roboto',sans-serif", fontWeight:400, fontSize:11, color:'#9e9e9e', textAlign:'center' }}>Activo 1 día apróx</p>
-                                </div>
-                                <div className="ucard" onClick={() => { setData('email', 'troni@celumovil.com'); setData('password', 'password123'); }}>
-                                    <span style={{ position:'absolute', top:8, right:8, fontSize:14, color:'#aaa' }}>&times;</span>
-                                    <div style={{ width:54, height:54, borderRadius:'50%', background:'#fff', boxShadow:'0 4px 10px rgba(0,0,0,.08)', marginBottom:12, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Poppins',sans-serif", fontWeight:600, fontSize:20, color:'#E72380' }}>TS</div>
-                                    <p style={{ fontFamily:"'Poppins',sans-serif", fontWeight:700, fontSize:13, color:'#111', textAlign:'center', lineHeight:1.2, marginBottom:4 }}>Troni Santos</p>
-                                    <p style={{ fontFamily:"'Roboto',sans-serif", fontWeight:400, fontSize:11, color:'#9e9e9e', textAlign:'center' }}>Pasivo 4 días apróx</p>
+                        {recentUsers.length > 0 && (
+                            <div className="users-section" style={{ position:'absolute', top:'56%', left:68 }}>
+                                <p style={{ fontFamily:"'Poppins',sans-serif", fontWeight:600, fontSize:15, color:'#333', marginBottom:16 }}>Inicia sesión como:</p>
+                                <div style={{ display:'flex', gap:20, flexWrap:'wrap' }}>
+                                    {recentUsers.slice(0, 3).map((u) => (
+                                        <div key={u.email} className="ucard" onClick={() => selectRecent(u)}>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); removeRecent(u.email); }}
+                                                style={{ position:'absolute', top:8, right:8, background:'none', border:'none', fontSize:16, color:'#bbb', cursor:'pointer', padding:4 }}
+                                            >
+                                                &times;
+                                            </button>
+                                            <div style={{ width:54, height:54, borderRadius:'50%', background:'#fff', boxShadow:'0 4px 10px rgba(0,0,0,.08)', marginBottom:12, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Poppins',sans-serif", fontWeight:600, fontSize:20, color:'#E72380' }}>
+                                                {u.initials || u.name.substring(0,2).toUpperCase()}
+                                            </div>
+                                            <p style={{ fontFamily:"'Poppins',sans-serif", fontWeight:700, fontSize:13, color:'#111', textAlign:'center', lineHeight:1.2, marginBottom:4 }}>{u.name}</p>
+                                            <p style={{ fontFamily:"'Roboto',sans-serif", fontWeight:400, fontSize:11, color:'#9e9e9e', textAlign:'center' }}>{u.status}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
 
                     {/* ── CENTER: Rocket ── */}
