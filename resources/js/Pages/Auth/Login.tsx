@@ -28,7 +28,21 @@ export default function Login({ status, canResetPassword }: { status?: string; c
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('login'), { onFinish: () => reset('password') });
+        post(route('login'), {
+            onSuccess: () => {
+                const saved = localStorage.getItem('recent_celuworkers');
+                let users = saved ? JSON.parse(saved) : [];
+                const newUser = {
+                    email: data.email,
+                    name: data.email.split('@')[0], // Fallback name based on email
+                    status: 'Activo recientemente',
+                    initials: data.email.substring(0, 2).toUpperCase()
+                };
+                users = [newUser, ...users.filter((u: any) => u.email !== data.email)].slice(0, 3);
+                localStorage.setItem('recent_celuworkers', JSON.stringify(users));
+            },
+            onFinish: () => reset('password')
+        });
     };
 
     return (
