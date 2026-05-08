@@ -18,35 +18,39 @@ class EntregaController extends Controller
         $request->validate([
             'tracking_id' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
-            'evidencia_comprimida' => 'required|string', // Recibimos el base64
+            'evidencias_comprimidas' => 'required|array', // Recibimos array de base64
+            'evidencias_comprimidas.*' => 'string',
         ]);
 
         $tracking_id = $request->tracking_id;
-        $base64Image = $request->evidencia_comprimida;
+        $base64Images = $request->evidencias_comprimidas;
         $now = Carbon::now();
 
-        // Limpiar el prefijo data:image/jpeg;base64,
-        $imageData = preg_replace('#^data:image/\w+;base64,#i', '', $base64Image);
-        $imageBinary = base64_decode($imageData);
-
-        // 1. Estructura de carpetas: evidencias/Año/Mes/Día/
-        $folderPath = "evidencias/{$now->format('Y/m/d')}";
-
-        // 2. Nombre del archivo: HH_tracking_id_mm_ss.jpg
-        $filename = "{$now->format('H')}_{$tracking_id}_{$now->format('i_s')}.jpg";
+        // 1. Estructura de carpetas: evidencias/Año/Mes/Día/ID_ORDEN/
+        $folderPath = "evidencias/{$now->format('Y/m/d')}/{$tracking_id}";
+        $urls = [];
 
         try {
-            $fullPath = "{$folderPath}/{$filename}";
-            
-            // Subir el binario decodificado directamente a S3
-            $uploaded = Storage::disk('s3')->put($fullPath, $imageBinary);
-            
-            if (!$uploaded) {
-                throw new \Exception("Error al guardar el archivo en el almacenamiento.");
-            }
+            foreach ($base64Images as $index => $base64Image) {
+                // Limpiar el prefijo data:image/jpeg;base64,
+                $imageData = preg_replace('#^data:image/\w+;base64,#i', '', $base64Image);
+                $imageBinary = base64_decode($imageData);
 
-            // Obtener la URL pública manualmente
-            $url = "https://" . env('AWS_BUCKET') . ".s3." . env('AWS_DEFAULT_REGION') . ".amazonaws.com/" . $fullPath;
+                // 2. Nombre del archivo
+                $filename = "{$now->format('H_i_s')}_img{$index}.jpg";
+                $fullPath = "{$folderPath}/{$filename}";
+                
+                // Subir el binario decodificado directamente a S3
+                $uploaded = Storage::disk('s3')->put($fullPath, $imageBinary);
+                
+                if (!$uploaded) {
+                    throw new \Exception("Error al guardar el archivo en el almacenamiento.");
+                }
+
+                // Obtener la URL pública manualmente
+                $url = "https://" . env('AWS_BUCKET') . ".s3." . env('AWS_DEFAULT_REGION') . ".amazonaws.com/" . $fullPath;
+                $urls[] = $url;
+            }
 
             // 3. Crear o actualizar entrega
             $entrega = Entrega::updateOrCreate(
@@ -55,7 +59,7 @@ class EntregaController extends Controller
                     'user_id' => Auth::id(),
                     'estado' => 'entregado',
                     'descripcion' => $request->descripcion,
-                    'url_evidencia' => $url
+                    'url_evidencia' => $urls
                 ]
             );
 

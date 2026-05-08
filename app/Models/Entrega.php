@@ -17,6 +17,10 @@ class Entrega extends Model
         'url_evidencia',
     ];
 
+    protected $casts = [
+        'url_evidencia' => 'array',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('tracking_id')->unique();
             $table->foreignId('user_id')->constrained();
             $table->string('estado')->default('pendiente');
-            $table->string('url_evidencia')->nullable();
+            $table->json('url_evidencia')->nullable();
             $table->timestamps();
         });
 
