@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Inertia\Inertia;
 
 class EntregaController extends Controller
 {
@@ -88,7 +89,9 @@ class EntregaController extends Controller
 
         $entregas = $query->orderBy('created_at', 'desc')->get();
 
-        return view('dashboard', compact('entregas'));
+        return Inertia::render('Dashboard', [
+            'entregas' => $entregas
+        ]);
     }
 
     /**
@@ -117,6 +120,9 @@ class EntregaController extends Controller
         // Obtener lista de todos los usuarios que tienen al menos una entrega (para el filtro)
         $repartidores = \App\Models\User::whereHas('entregas')->get();
 
-        return view('admin.index', compact('entregas', 'repartidores'));
+        return Inertia::render('Admin/Index', [
+            'entregas' => $entregas,
+            'repartidores' => $repartidores
+        ]);
     }
 }

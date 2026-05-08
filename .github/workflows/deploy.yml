@@ -21,6 +21,8 @@ jobs:
             git fetch origin
             git checkout production
             git pull origin production
+            docker compose build app
+            docker compose up -d --force-recreate app web
             docker compose exec -T app composer install --no-dev --optimize-autoloader
             docker compose exec -T app npm install
             docker compose exec -T app npm run build
@@ -28,3 +30,5 @@ jobs:
             docker compose exec -T app php artisan config:cache
             docker compose exec -T app php artisan route:cache
             docker compose exec -T app php artisan view:cache
+            docker compose exec -T app php artisan storage:link
+            echo "Deploy completado OK"
