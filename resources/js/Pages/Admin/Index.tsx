@@ -36,7 +36,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
 
     const handleFilterSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get(route('admin.evidencias'), filterState as any, { preserveState: true });
+        router.get(route('admin.usuarios'), filterState as any, { preserveState: true });
     };
 
     const formatDate = (dateStr: string | null) => {
