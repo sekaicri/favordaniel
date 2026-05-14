@@ -1,0 +1,34 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 147.93.47.125
+          username: root
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cd /var/www/favordaniel
+            git fetch origin
+            git checkout production
+            git pull origin production
+            docker compose build app
+            docker compose up -d --force-recreate app web
+            docker compose exec -T app composer install --no-dev --optimize-autoloader
+            docker compose exec -T app npm install
+            docker compose exec -T app npm run build
+            docker compose exec -T app php artisan migrate --force
+            docker compose exec -T app php artisan config:cache
+            docker compose exec -T app php artisan route:cache
+            docker compose exec -T app php artisan view:cache
+            docker compose exec -T app php artisan storage:link
+            echo "Deploy completado OK"

@@ -1,0 +1,19 @@
+import ApplicationLogo from '@/Components/ApplicationLogo';
+import { Link } from '@inertiajs/react';
+import { PropsWithChildren } from 'react';
+
+export default function Guest({ children }: PropsWithChildren) {
+    return (
+        <div className="flex min-h-screen flex-col items-center pt-6 sm:justify-center sm:pt-0 bg-[#fdf2f8]">
+            <div>
+                <Link href="/">
+                    <img src="/logo.png" alt="CeluMovil Store Logo" className="h-24 w-auto drop-shadow-md" />
+                </Link>
+            </div>
+
+            <div className="mt-6 w-full overflow-hidden bg-white px-6 py-8 shadow-[0_10px_25px_-5px_rgba(233,30,99,0.1)] sm:max-w-md sm:rounded-3xl border border-[#fce4ec]">
+                {children}
+            </div>
+        </div>
+    );
+}
