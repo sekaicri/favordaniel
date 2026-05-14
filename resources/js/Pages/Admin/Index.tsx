@@ -1,21 +1,15 @@
 import React, { useState } from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, router } from '@inertiajs/react';
-import GalleryModal from '@/Components/GalleryModal';
 
 interface User {
     id: number;
     name: string;
     email: string;
-}
-
-interface Entrega {
-    id: number;
-    tracking_id: string;
-    descripcion: string;
-    url_evidencia: string[] | string | null;
-    created_at: string;
-    user: User;
+    role: string;
+    telefono: string | null;
+    estado: boolean;
+    ultimo_acceso: string | null;
 }
 
 interface PaginatedData<T> {
@@ -25,245 +19,242 @@ interface PaginatedData<T> {
 }
 
 interface AdminIndexProps {
-    entregas: PaginatedData<Entrega>;
-    repartidores: User[];
+    usuarios: PaginatedData<User>;
     filters: {
-        user_id?: string;
-        fecha?: string;
+        search?: string;
+        role?: string;
+        estado?: string;
     };
 }
 
-export default function AdminIndex({ auth, entregas, repartidores, filters = {} }: any) {
-    const [galleryImages, setGalleryImages] = useState<string[]>([]);
-    const [galleryIndex, setGalleryIndex] = useState(0);
-    const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-
+export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) {
     const [filterState, setFilterState] = useState({
-        user_id: filters.user_id || '',
-        fecha: filters.fecha || ''
+        search: filters.search || '',
+        role: filters.role || '',
+        estado: filters.estado || ''
     });
-
-    const openGallery = (images: string[], index: number) => {
-        setGalleryImages(images);
-        setGalleryIndex(index);
-        setIsGalleryOpen(true);
-    };
-
-    const parseUrls = (urls: any): string[] => {
-        if (!urls) return [];
-        if (Array.isArray(urls)) return urls;
-        try {
-            return JSON.parse(urls);
-        } catch {
-            return [];
-        }
-    };
 
     const handleFilterSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(route('admin.evidencias'), filterState as any, { preserveState: true });
     };
 
-    const clearFilters = () => {
-        setFilterState({ user_id: '', fecha: '' });
-        router.get(route('admin.evidencias'), {}, { preserveState: true });
+    const formatDate = (dateStr: string | null) => {
+        if (!dateStr) return 'Nunca';
+        const date = new Date(dateStr);
+        const today = new Date();
+        const isToday = date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+        
+        const time = date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase();
+        
+        if (isToday) {
+            return `Hoy, ${time}`;
+        }
+        
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const isYesterday = date.getDate() === yesterday.getDate() && date.getMonth() === yesterday.getMonth() && date.getFullYear() === yesterday.getFullYear();
+        
+        if (isYesterday) {
+            return `Ayer, ${time}`;
+        }
+        
+        return `${date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}, ${time}`;
     };
 
-    const formatDate = (dateStr: string) => {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    };
+    const getRoleBadge = (role: string) => {
+        const roles: Record<string, { label: string, classes: string }> = {
+            'admin': { label: 'Administrador', classes: 'bg-pink-50 text-pink-600 border-pink-200' },
+            'facturador': { label: 'Facturador', classes: 'bg-green-50 text-green-600 border-green-200' },
+            'inventarios': { label: 'Inventarios', classes: 'bg-yellow-50 text-yellow-600 border-yellow-200' },
+            'repartidor': { label: 'Repartidor', classes: 'bg-cyan-50 text-cyan-500 border-cyan-200' },
+            'soporte': { label: 'Soporte', classes: 'bg-orange-50 text-orange-500 border-orange-200' },
+            'experiencia': { label: 'Experiencia', classes: 'bg-purple-50 text-purple-500 border-purple-200' },
+            'user': { label: 'Usuario', classes: 'bg-slate-50 text-slate-500 border-slate-200' },
+        };
 
-    const formatTime = (dateStr: string) => {
-        const date = new Date(dateStr);
-        return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const r = roles[role.toLowerCase()] || roles['user'];
+        return <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${r.classes}`}>{r.label}</span>;
     };
 
     return (
-        <AuthenticatedLayout
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Panel de Administración</h2>}
-        >
-            <Head title="Admin - Entregas" />
+        <AdminLayout>
+            <Head title="Gestión de Usuarios" />
 
-            <div className="bg-[#fdf2f8] min-h-screen py-8 font-sans">
-                <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-                    
-                    {/* Header Section */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8 flex flex-col gap-6">
-                        <div className="flex justify-between items-start flex-wrap gap-4">
-                            <div>
-                                <h1 className="text-3xl font-extrabold text-[#880e4f] m-0">Registro de <span className="text-[#e91e63]">Entregas</span></h1>
-                                <p className="text-slate-500 mt-2 text-base">Gestión centralizada y auditoría de evidencias.</p>
+            <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 mb-8 flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center text-[#e91e63]">
+                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    </div>
+                    <div>
+                        <h1 className="text-4xl font-extrabold text-[#9c104a] m-0 mb-1 tracking-tight">Gestión de Usuarios</h1>
+                        <p className="text-slate-500 text-base font-medium">Administra los usuarios del sistema y sus permisos</p>
+                    </div>
+                </div>
+                
+                <button className="bg-white border border-[#e91e63] text-[#e91e63] px-6 py-2.5 rounded-full font-semibold flex items-center gap-2 hover:bg-pink-50 transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    Nuevo Usuario
+                </button>
+            </div>
+
+            <div className="mb-6">
+                <form onSubmit={handleFilterSubmit} className="flex gap-4 items-end">
+                    <div className="flex-1">
+                        <label className="text-xs font-bold text-slate-500 mb-2 block ml-1">Buscar usuario</label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                             </div>
-                            
-                            <div className="bg-slate-50 p-4 rounded-xl flex gap-8 border border-slate-100">
-                                <div className="text-center">
-                                    <p className="m-0 text-xs font-bold text-slate-500 uppercase tracking-wide">Total Registros</p>
-                                    <p className="m-0 text-2xl font-extrabold text-[#e91e63]">{entregas.total}</p>
-                                </div>
-                                <div className="w-[1px] bg-slate-300"></div>
-                                <div className="text-center">
-                                    <p className="m-0 text-xs font-bold text-slate-500 uppercase tracking-wide">Repartidores</p>
-                                    <p className="m-0 text-2xl font-extrabold text-[#880e4f]">{repartidores.length}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Filters */}
-                        <div className="pt-6 border-t border-slate-100">
-                            <form onSubmit={handleFilterSubmit} className="flex gap-4 items-end flex-wrap">
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wide">Filtrar por Repartidor</label>
-                                    <select 
-                                        value={filterState.user_id}
-                                        onChange={e => setFilterState({...filterState, user_id: e.target.value})}
-                                        className="p-2.5 border border-slate-300 rounded-lg bg-white min-w-[220px] text-sm focus:border-[#e91e63] focus:ring-[#e91e63] outline-none transition-colors"
-                                    >
-                                        <option value="">Todos los usuarios</option>
-                                        {repartidores.map((r: User) => (
-                                            <option key={r.id} value={r.id}>{r.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wide">Fecha Específica</label>
-                                    <input 
-                                        type="date" 
-                                        value={filterState.fecha}
-                                        onChange={e => setFilterState({...filterState, fecha: e.target.value})}
-                                        className="p-2.5 border border-slate-300 rounded-lg bg-white text-sm focus:border-[#e91e63] focus:ring-[#e91e63] outline-none transition-colors"
-                                    />
-                                </div>
-
-                                <div className="flex gap-2">
-                                    <button type="submit" className="bg-[#880e4f] text-white px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-[#6c0b3f] transition-colors">
-                                        APLICAR FILTROS
-                                    </button>
-                                    {(filterState.user_id || filterState.fecha) && (
-                                        <button type="button" onClick={clearFilters} className="bg-slate-100 text-slate-600 px-4 py-2.5 rounded-lg font-semibold border border-slate-300 text-sm hover:bg-slate-200 transition-colors">
-                                            Limpiar
-                                        </button>
-                                    )}
-                                </div>
-                            </form>
+                            <input 
+                                type="text" 
+                                placeholder="Nombre, correo o teléfono" 
+                                value={filterState.search}
+                                onChange={e => setFilterState({...filterState, search: e.target.value})}
+                                className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-full text-sm outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 transition-colors"
+                            />
                         </div>
                     </div>
+                    
+                    <div className="w-48">
+                        <label className="text-xs font-bold text-slate-500 mb-2 block ml-1">Rol</label>
+                        <select 
+                            value={filterState.role}
+                            onChange={e => setFilterState({...filterState, role: e.target.value})}
+                            className="w-full px-4 py-3 bg-white border border-slate-200 rounded-full text-sm outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 appearance-none text-slate-600"
+                            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundPosition: `right 1rem center`, backgroundRepeat: `no-repeat`, backgroundSize: `1.2em 1.2em` }}
+                        >
+                            <option value="">Todos los roles</option>
+                            <option value="admin">Administrador</option>
+                            <option value="facturador">Facturador</option>
+                            <option value="inventarios">Inventarios</option>
+                            <option value="repartidor">Repartidor</option>
+                            <option value="soporte">Soporte</option>
+                            <option value="experiencia">Experiencia</option>
+                        </select>
+                    </div>
 
-                    {/* Table Section */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full min-w-[1000px] border-collapse text-left">
-                                <thead>
-                                    <tr className="bg-[#fdf2f8] border-b-2 border-slate-200">
-                                        <th className="p-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Repartidor</th>
-                                        <th className="p-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Tracking ID</th>
-                                        <th className="p-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Descripción</th>
-                                        <th className="p-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Evidencia</th>
-                                        <th className="p-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha y Hora</th>
-                                        <th className="p-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-slate-100">
-                                    {entregas.data.length > 0 ? entregas.data.map((entrega: Entrega) => {
-                                        const urls = parseUrls(entrega.url_evidencia);
-                                        return (
-                                            <tr key={entrega.id} className="hover:bg-[#fdf2f8] transition-colors duration-150">
-                                                <td className="p-5">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-9 h-9 bg-[#fce4ec] text-[#d81b60] rounded-full flex items-center justify-center font-extrabold text-sm">
-                                                            {entrega.user.name.charAt(0).toUpperCase()}
-                                                        </div>
-                                                        <div>
-                                                            <p className="m-0 font-bold text-[#880e4f] text-sm">{entrega.user.name}</p>
-                                                            <p className="m-0 text-xs text-slate-500">{entrega.user.email}</p>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="p-5">
-                                                    <span className="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md font-mono font-bold text-sm border border-slate-200">
-                                                        {entrega.tracking_id}
-                                                    </span>
-                                                </td>
-                                                <td className="p-5 max-w-[300px]">
-                                                    <p className="m-0 text-sm text-slate-700 leading-snug">{entrega.descripcion || 'N/A'}</p>
-                                                </td>
-                                                <td className="p-5">
-                                                    {urls.length > 0 ? (
-                                                        <div className="flex gap-2 flex-wrap">
-                                                            {urls.map((url, idx) => (
-                                                                <div 
-                                                                    key={idx}
-                                                                    onClick={() => openGallery(urls, idx)}
-                                                                    className="relative w-10 h-10 rounded-lg overflow-hidden border-2 border-white shadow-[0_0_0_1px_#e2e8f0] cursor-pointer hover:scale-110 transition-transform"
-                                                                >
-                                                                    <img src={url} className="w-full h-full object-cover" alt="Evidencia" />
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    ) : (
-                                                        <span className="text-slate-400 italic text-xs">Sin foto</span>
-                                                    )}
-                                                </td>
-                                                <td className="p-5">
-                                                    <p className="m-0 text-sm font-bold text-[#880e4f]">{formatDate(entrega.created_at)}</p>
-                                                    <p className="m-0 text-xs text-slate-500">{formatTime(entrega.created_at)}</p>
-                                                </td>
-                                                <td className="p-5">
-                                                    {urls.length > 0 && (
-                                                        <button 
-                                                            onClick={() => openGallery(urls, 0)}
-                                                            className="bg-slate-100 text-[#880e4f] px-3 py-1.5 rounded-md text-xs font-bold border border-slate-300 hover:bg-slate-200 transition-colors w-full text-center"
-                                                        >
-                                                            VER TODAS
-                                                        </button>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        );
-                                    }) : (
-                                        <tr>
-                                            <td colSpan={6} className="p-20 text-center text-slate-400 italic font-medium">
-                                                No hay registros que coincidan con la búsqueda.
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        {/* Pagination Footer */}
-                        {entregas.links && entregas.links.length > 3 && (
-                            <div className="bg-[#fdf2f8] p-4 border-t border-slate-200 flex justify-center gap-1">
-                                {entregas.links.map((link: any, idx: number) => (
-                                    <button 
-                                        key={idx}
-                                        onClick={() => link.url ? router.get(link.url, filterState as any, { preserveState: true }) : null}
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                        disabled={!link.url}
-                                        className={`px-3 py-1.5 rounded-md text-sm border ${
-                                            link.active 
-                                                ? 'bg-[#880e4f] text-white border-[#880e4f] font-bold' 
-                                                : link.url 
-                                                    ? 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50' 
-                                                    : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
-                                        }`}
-                                    />
-                                ))}
-                            </div>
-                        )}
+                    <div className="w-48">
+                        <label className="text-xs font-bold text-slate-500 mb-2 block ml-1">Estado</label>
+                        <select 
+                            value={filterState.estado}
+                            onChange={e => setFilterState({...filterState, estado: e.target.value})}
+                            className="w-full px-4 py-3 bg-white border border-slate-200 rounded-full text-sm outline-none focus:border-pink-300 focus:ring-1 focus:ring-pink-300 appearance-none text-slate-600"
+                            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundPosition: `right 1rem center`, backgroundRepeat: `no-repeat`, backgroundSize: `1.2em 1.2em` }}
+                        >
+                            <option value="">Todos los estados</option>
+                            <option value="activo">Activo</option>
+                            <option value="inactivo">Inactivo</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" className="bg-[#e91e63] text-white px-8 py-3 rounded-full font-semibold text-sm hover:bg-[#d81b60] transition-colors flex items-center gap-2 h-[46px] shadow-sm">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
+                        Aplicar Filtro
+                    </button>
+                </form>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mb-8">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left whitespace-nowrap">
+                        <thead>
+                            <tr className="border-b border-slate-100">
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 font-sans tracking-wide">Usuario</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide">Rol</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide">Correo</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide">Teléfono</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide">Estado</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide">Último acceso</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {usuarios.data.map((user) => (
+                                <tr key={user.id} className="hover:bg-slate-50 transition-colors">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-pink-50 text-[#e91e63] flex items-center justify-center font-bold text-xs shrink-0">
+                                                {user.name.substring(0, 2).toUpperCase()}
+                                            </div>
+                                            <span className="text-sm text-slate-500 font-medium">{user.name}</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 text-center">
+                                        {getRoleBadge(user.role)}
+                                    </td>
+                                    <td className="px-6 py-4 text-center text-sm text-slate-500">
+                                        {user.email}
+                                    </td>
+                                    <td className="px-6 py-4 text-center text-sm text-slate-500">
+                                        {user.telefono || 'Sin registrar'}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center justify-center">
+                                            <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${user.estado ? 'border-green-200 text-green-700 bg-green-50' : 'border-slate-200 text-slate-500 bg-slate-50'}`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full ${user.estado ? 'bg-green-500' : 'bg-slate-400'}`}></span>
+                                                {user.estado ? 'Activo' : 'Inactivo'}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 text-center text-sm text-slate-500">
+                                        {formatDate(user.ultimo_acceso)}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center justify-center gap-2 text-[#e91e63]">
+                                            <button className="p-1 hover:bg-pink-50 rounded transition-colors">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                            </button>
+                                            <button className="p-1 hover:bg-pink-50 rounded transition-colors">
+                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 14a2 2 0 100-4 2 2 0 000 4zm0-6a2 2 0 100-4 2 2 0 000 4zm0 12a2 2 0 100-4 2 2 0 000 4z" /></svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {/* Pagination */}
+                <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-sm text-slate-500 font-medium">
+                        Mostrando {usuarios.data.length} de {usuarios.total} usuarios
+                    </span>
+                    <div className="flex items-center gap-1">
+                        {usuarios.links.map((link: any, idx: number) => {
+                            if (link.label.includes('Previous')) {
+                                return (
+                                    <button key={idx} disabled={!link.url} onClick={() => link.url ? router.get(link.url, filterState as any) : null} className="w-8 h-8 flex items-center justify-center rounded-full border border-pink-100 text-pink-400 hover:bg-pink-50 disabled:opacity-50">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                                    </button>
+                                );
+                            }
+                            if (link.label.includes('Next')) {
+                                return (
+                                    <button key={idx} disabled={!link.url} onClick={() => link.url ? router.get(link.url, filterState as any) : null} className="w-8 h-8 flex items-center justify-center rounded-full border border-pink-100 text-pink-400 hover:bg-pink-50 disabled:opacity-50">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                                    </button>
+                                );
+                            }
+                            return (
+                                <button 
+                                    key={idx}
+                                    onClick={() => link.url ? router.get(link.url, filterState as any) : null}
+                                    className={`w-8 h-8 flex items-center justify-center rounded-full text-xs font-bold ${link.active ? 'bg-[#e91e63] text-white' : 'text-pink-400 hover:bg-pink-50'}`}
+                                >
+                                    {link.label}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
-
-            <GalleryModal 
-                images={galleryImages}
-                startIndex={galleryIndex}
-                isOpen={isGalleryOpen}
-                onClose={() => setIsGalleryOpen(false)}
-                onNext={() => setGalleryIndex((prev) => (prev < galleryImages.length - 1 ? prev + 1 : 0))}
-                onPrev={() => setGalleryIndex((prev) => (prev > 0 ? prev - 1 : galleryImages.length - 1))}
-            />
-        </AuthenticatedLayout>
+            
+            <div className="flex justify-between items-center text-xs text-slate-400 font-medium pb-8 px-2">
+                <span>© 2026 Celumovil Store. Todos los derechos reservados</span>
+                <span>Versión 1.0.0</span>
+            </div>
+        </AdminLayout>
     );
 }

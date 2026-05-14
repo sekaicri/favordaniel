@@ -77,7 +77,7 @@ class EntregaController extends Controller
      */
     public function index(Request $request)
     {
-        if (Auth::user()->role === 'admin') {
+        if (Auth::user()->role === 'admin' || Auth::user()->email === 'hola@celumovilstore.com.co') {
             return redirect()->route('admin.evidencias');
         }
 
@@ -99,30 +99,36 @@ class EntregaController extends Controller
      */
     public function adminIndex(Request $request)
     {
-        if (Auth::user()->role !== 'admin') {
-            abort(403);
+        if (Auth::user()->email !== 'hola@celumovilstore.com.co') {
+            abort(403, 'Acceso denegado.');
         }
 
-        $query = Entrega::with('user');
+        $query = \App\Models\User::query();
 
-        // Filtrar por fecha
-        if ($request->has('fecha') && $request->fecha != '') {
-            $query->whereDate('created_at', $request->fecha);
+        // Filtrar por búsqueda de texto
+        if ($request->has('search') && $request->search != '') {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%')
+                  ->orWhere('telefono', 'like', '%' . $request->search . '%');
+            });
         }
 
-        // Filtrar por repartidor
-        if ($request->has('user_id') && $request->user_id != '') {
-            $query->where('user_id', $request->user_id);
+        // Filtrar por rol
+        if ($request->has('role') && $request->role != '') {
+            $query->where('role', $request->role);
         }
 
-        $entregas = $query->orderBy('created_at', 'desc')->paginate(20);
-        
-        // Obtener lista de todos los usuarios que tienen al menos una entrega (para el filtro)
-        $repartidores = \App\Models\User::whereHas('entregas')->get();
+        // Filtrar por estado
+        if ($request->has('estado') && $request->estado != '') {
+            $query->where('estado', $request->estado === 'activo');
+        }
+
+        $usuarios = $query->orderBy('name', 'asc')->paginate(20);
 
         return Inertia::render('Admin/Index', [
-            'entregas' => $entregas,
-            'repartidores' => $repartidores
+            'usuarios' => $usuarios,
+            'filters' => $request->only(['search', 'role', 'estado'])
         ]);
     }
 }
