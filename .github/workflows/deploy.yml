@@ -20,7 +20,7 @@ jobs:
             cd /var/www/favordaniel
             git fetch origin
             git checkout production
-            git pull origin production
+            git reset --hard origin/production
             docker compose build app
             docker compose up -d --force-recreate app web
             docker compose exec -T app composer install --no-dev --optimize-autoloader
