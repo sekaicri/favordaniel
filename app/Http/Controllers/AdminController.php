@@ -14,8 +14,8 @@ class AdminController extends Controller
      */
     public function usersIndex(Request $request)
     {
-        if (Auth::user()->email !== 'hola@celumovilstore.com.co') {
-            abort(403, 'Acceso denegado.');
+        if (Auth::user()->role !== 'admin' && Auth::user()->email !== 'hola@celumovilstore.com.co') {
+            return redirect()->route('access.denied');
         }
 
         $query = User::query();
