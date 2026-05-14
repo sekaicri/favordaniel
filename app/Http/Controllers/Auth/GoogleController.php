@@ -45,16 +45,8 @@ class GoogleController extends Controller
                         'google_refresh_token' => $googleUser->refreshToken,
                     ]);
                 } else {
-                    // Create new user
-                    $user = User::create([
-                        'name' => $googleUser->name,
-                        'email' => $googleUser->email,
-                        'google_id' => $googleUser->id,
-                        'password' => bcrypt(Str::random(16)), // Dummy password
-                        'role' => 'user', // Default role
-                        'google_token' => $googleUser->token,
-                        'google_refresh_token' => $googleUser->refreshToken,
-                    ]);
+                    // User is not registered, deny access
+                    return redirect()->route('access.denied');
                 }
             } else {
                 // Update tokens

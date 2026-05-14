@@ -10,6 +10,10 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+Route::get('/acceso-denegado', function () {
+    return Inertia::render('Auth/AccessDenied');
+})->name('access.denied');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [EntregaController::class, 'index'])->name('dashboard');
     Route::post('/evidencia/upload', [EntregaController::class, 'uploadEvidence'])->name('evidencia.upload');
