@@ -58,16 +58,7 @@ class GoogleController extends Controller
             
             Auth::login($user);
             
-            // Redirección escalable basada en el rol del usuario
-            $redirectRoute = match($user->role) {
-                'admin' => route('admin.usuarios', absolute: false),
-                'repartidor' => route('dashboard', absolute: false),
-                // Aquí puedes agregar más roles a futuro:
-                // 'facturador' => route('facturas.index', absolute: false),
-                default => route('dashboard', absolute: false),
-            };
-            
-            return redirect()->intended($redirectRoute);
+            return redirect()->intended(route('dashboard', absolute: false));
             
         } catch (Exception $e) {
             return redirect()->route('login')->with('error', 'Error al autenticar con Google: ' . $e->getMessage());

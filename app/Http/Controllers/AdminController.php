@@ -14,9 +14,7 @@ class AdminController extends Controller
      */
     public function usersIndex(Request $request)
     {
-        if (Auth::user()->role !== 'admin') {
-            return redirect()->route('access.denied');
-        }
+
 
         $query = User::query();
 

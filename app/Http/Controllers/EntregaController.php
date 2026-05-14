@@ -77,17 +77,7 @@ class EntregaController extends Controller
      */
     public function index(Request $request)
     {
-        $role = Auth::user()->role;
-        
-        // Si es admin, mandarlo a su panel
-        if ($role === 'admin') {
-            return redirect()->route('admin.usuarios');
-        }
-        
-        // Si no es repartidor ni admin, denegar acceso al dashboard de fotos
-        if ($role !== 'repartidor') {
-            return redirect()->route('access.denied');
-        }
+
 
         $query = Entrega::where('user_id', Auth::id());
 
