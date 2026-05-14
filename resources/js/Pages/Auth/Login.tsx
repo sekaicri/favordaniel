@@ -1,9 +1,11 @@
 import InputError from '@/Components/InputError';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler, useEffect, useState } from 'react';
 
 export default function Login({ status, canResetPassword }: { status?: string; canResetPassword?: boolean }) {
     const { data, setData, post, processing, errors, reset } = useForm({ email: '', password: '', remember: false });
+    const { props } = usePage<any>();
+    const flash = props.flash || {};
 
     const [recentUsers, setRecentUsers] = useState<any[]>([]);
 
@@ -143,13 +145,14 @@ export default function Login({ status, canResetPassword }: { status?: string; c
                             <h2 style={{ fontFamily:"'Poppins',sans-serif", fontWeight:500, fontSize:55, lineHeight:1.0, letterSpacing:0, color:'#000000', marginBottom:32 }}>Inicia sesión</h2>
 
                             {status && <div style={{ marginBottom:14, fontSize:13, color:'#16a34a', background:'#f0fdf4', padding:'10px 14px', borderRadius:10, border:'1px solid #bbf7d0' }}>{status}</div>}
+                            {flash.error && <div style={{ marginBottom:14, fontSize:13, color:'#dc2626', background:'#fef2f2', padding:'10px 14px', borderRadius:10, border:'1px solid #fecaca' }}>{flash.error}</div>}
 
                             {/* Google */}
-                            <button type="button" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:14, width:'100%', height:55, background:'#E9F1FF', border:'none', borderRadius:9, fontFamily:"'Poppins',sans-serif", fontWeight:400, fontSize:16, color:'#4285f4', cursor:'pointer', marginBottom:48, transition:'background .2s' }}
+                            <a href={route('auth.google')} style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:14, width:'100%', height:55, background:'#E9F1FF', border:'none', borderRadius:9, fontFamily:"'Poppins',sans-serif", fontWeight:400, fontSize:16, color:'#4285f4', cursor:'pointer', marginBottom:48, transition:'background .2s', textDecoration: 'none' }}
                                 onMouseOver={e=>(e.currentTarget.style.background='#dceeff')} onMouseOut={e=>(e.currentTarget.style.background='#eaf2ff')}>
                                 <img src="/images/google.png" alt="Google" style={{ width:20, height:20 }} />
                                 Inicia con tu correo coorporativo
-                            </button>
+                            </a>
 
                             {/* Form — no flex:1 so it stays compact */}
                             <form onSubmit={submit}>
