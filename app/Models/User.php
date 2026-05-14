@@ -25,6 +25,9 @@ class User extends Authenticatable
         'google_id',
         'google_token',
         'google_refresh_token',
+        'telefono',
+        'estado',
+        'ultimo_acceso',
     ];
 
     /**
@@ -47,6 +50,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'estado' => 'boolean',
+            'ultimo_acceso' => 'datetime',
         ];
     }
 
