@@ -8,6 +8,14 @@ use Inertia\Inertia;
 
 Route::get('/', [EntregaController::class, 'home']);
 
+Route::get('/debug-log', function () {
+    $logFile = storage_path('logs/laravel.log');
+    if (!file_exists($logFile)) return 'No log file found.';
+    $lines = file($logFile);
+    $lastLines = array_slice($lines, -100);
+    return response('<pre>' . implode("", $lastLines) . '</pre>');
+});
+
 Route::get('/acceso-denegado', [EntregaController::class, 'accessDenied'])->name('access.denied');
 
 // Switchboard de redirección principal después del login
