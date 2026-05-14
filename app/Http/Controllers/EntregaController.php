@@ -78,7 +78,7 @@ class EntregaController extends Controller
     public function index(Request $request)
     {
         if (Auth::user()->role === 'admin' || Auth::user()->email === 'hola@celumovilstore.com.co') {
-            return redirect()->route('admin.evidencias');
+            return redirect()->route('admin.usuarios');
         }
 
         $query = Entrega::where('user_id', Auth::id());
@@ -94,41 +94,5 @@ class EntregaController extends Controller
         ]);
     }
 
-    /**
-     * Web: Panel Admin (ve todas las fotos).
-     */
-    public function adminIndex(Request $request)
-    {
-        if (Auth::user()->email !== 'hola@celumovilstore.com.co') {
-            abort(403, 'Acceso denegado.');
-        }
 
-        $query = \App\Models\User::query();
-
-        // Filtrar por búsqueda de texto
-        if ($request->has('search') && $request->search != '') {
-            $query->where(function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%')
-                  ->orWhere('telefono', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        // Filtrar por rol
-        if ($request->has('role') && $request->role != '') {
-            $query->where('role', $request->role);
-        }
-
-        // Filtrar por estado
-        if ($request->has('estado') && $request->estado != '') {
-            $query->where('estado', $request->estado === 'activo');
-        }
-
-        $usuarios = $query->orderBy('name', 'asc')->paginate(20);
-
-        return Inertia::render('Admin/Index', [
-            'usuarios' => $usuarios,
-            'filters' => $request->only(['search', 'role', 'estado'])
-        ]);
-    }
 }

@@ -13,7 +13,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [EntregaController::class, 'index'])->name('dashboard');
     Route::post('/evidencia/upload', [EntregaController::class, 'uploadEvidence'])->name('evidencia.upload');
-    Route::get('/admin/evidencias', [EntregaController::class, 'adminIndex'])->name('admin.evidencias');
+    Route::get('/admin/usuarios', [\App\Http\Controllers\AdminController::class, 'usersIndex'])->name('admin.usuarios');
 });
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
