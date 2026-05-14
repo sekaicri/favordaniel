@@ -77,7 +77,7 @@ class EntregaController extends Controller
      */
     public function index(Request $request)
     {
-        if (Auth::user()->role === 'admin' || Auth::user()->email === 'hola@celumovilstore.com.co') {
+        if (Auth::user()->role === 'admin') {
             return redirect()->route('admin.usuarios');
         }
 

@@ -14,7 +14,7 @@ class AdminController extends Controller
      */
     public function usersIndex(Request $request)
     {
-        if (Auth::user()->role !== 'admin' && Auth::user()->email !== 'hola@celumovilstore.com.co') {
+        if (Auth::user()->role !== 'admin') {
             return redirect()->route('access.denied');
         }
 
