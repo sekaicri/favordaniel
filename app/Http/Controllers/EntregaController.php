@@ -11,6 +11,16 @@ use Inertia\Inertia;
 
 class EntregaController extends Controller
 {
+    public function home()
+    {
+        return redirect()->route('login');
+    }
+
+    public function accessDenied()
+    {
+        return Inertia::render('Auth/AccessDenied');
+    }
+
     /**
      * API: Sube una evidencia a S3 y actualiza la base de datos.
      */
@@ -70,6 +80,19 @@ class EntregaController extends Controller
             \Log::error("Error en S3: " . $e->getMessage());
             return redirect()->back()->withErrors(['error' => 'Error al subir la evidencia: ' . $e->getMessage()])->withInput();
         }
+    }
+
+    /**
+     * Switchboard para redirigir al dashboard correcto según el rol.
+     */
+    public function dashboardSwitchboard()
+    {
+        $role = \Illuminate\Support\Facades\Auth::user()->role;
+        return match($role) {
+            'admin' => redirect()->route('admin.usuarios'),
+            'repartidor' => redirect()->route('repartidor.deliveries'),
+            default => redirect()->route('access.denied'),
+        };
     }
 
     /**

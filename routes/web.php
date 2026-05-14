@@ -6,23 +6,12 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+Route::get('/', [EntregaController::class, 'home']);
 
-Route::get('/acceso-denegado', function () {
-    return Inertia::render('Auth/AccessDenied');
-})->name('access.denied');
+Route::get('/acceso-denegado', [EntregaController::class, 'accessDenied'])->name('access.denied');
 
 // Switchboard de redirección principal después del login
-Route::get('/dashboard', function () {
-    $role = \Illuminate\Support\Facades\Auth::user()->role;
-    return match($role) {
-        'admin' => redirect()->route('admin.usuarios'),
-        'repartidor' => redirect()->route('repartidor.deliveries'),
-        default => redirect()->route('access.denied'),
-    };
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [EntregaController::class, 'dashboardSwitchboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
 // Rutas exclusivas para repartidores
 Route::middleware(['auth', 'verified', 'role:repartidor'])->group(function () {
