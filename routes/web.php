@@ -19,14 +19,14 @@ Route::get('/dashboard', function () {
     $role = \Illuminate\Support\Facades\Auth::user()->role;
     return match($role) {
         'admin' => redirect()->route('admin.usuarios'),
-        'repartidor' => redirect()->route('repartidor.entregas'),
+        'repartidor' => redirect()->route('repartidor.deliveries'),
         default => redirect()->route('access.denied'),
     };
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Rutas exclusivas para repartidores
 Route::middleware(['auth', 'verified', 'role:repartidor'])->group(function () {
-    Route::get('/mis-entregas', [EntregaController::class, 'index'])->name('repartidor.entregas');
+    Route::get('/deliveries', [EntregaController::class, 'index'])->name('repartidor.deliveries');
     Route::post('/evidencia/upload', [EntregaController::class, 'uploadEvidence'])->name('evidencia.upload');
 });
 

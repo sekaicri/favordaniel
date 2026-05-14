@@ -233,12 +233,12 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                     <div className="mt-12">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-[#880e4f] m-0 text-xl font-extrabold">Historial Reciente</h2>
-                            <form action={route('repartidor.entregas')} method="GET" className="flex gap-2 items-center">
+                            <form action={route('repartidor.deliveries')} method="GET" className="flex gap-2 items-center">
                                 <input 
                                     type="date" 
                                     name="fecha" 
                                     defaultValue={filters?.fecha || ''}
-                                    onChange={e => router.get(route('repartidor.entregas'), { fecha: e.target.value }, { preserveState: true })}
+                                    onChange={e => router.get(route('repartidor.deliveries'), { fecha: e.target.value }, { preserveState: true })}
                                     className="p-2 border border-[#f48fb1] rounded-lg text-xs bg-white text-[#880e4f] outline-none focus:ring-1 focus:ring-[#e91e63]"
                                 />
                             </form>
