@@ -111,21 +111,28 @@ export default function Login({ status, canResetPassword }: { status?: string; c
                             <div className="users-section" style={{ position:'absolute', top:'56%', left:68, right:0 }}>
                                 <p style={{ fontFamily:"'Poppins',sans-serif", fontWeight:600, fontSize:15, color:'#333', marginBottom:16 }}>Inicia sesión como:</p>
                                 <div style={{ display:'flex', flexDirection:'row', gap:16, flexWrap:'nowrap' }}>
-                                    {recentUsers.slice(0, 3).map((u) => (
+                                    {recentUsers.slice(0, 3).map((u) => {
+                                        // Truncar nombre: "Cristian Ricaurte Ricaurte" → "Cristian R."
+                                        const parts = (u.name || '').trim().split(' ');
+                                        const shortName = parts.length > 1 
+                                            ? `${parts[0]} ${parts[1].charAt(0)}.`
+                                            : parts[0];
+                                        return (
                                         <div key={u.email} className="ucard" onClick={() => selectRecent(u)}>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); removeRecent(u.email); }}
-                                                style={{ position:'absolute', top:8, right:8, background:'none', border:'none', fontSize:16, color:'#bbb', cursor:'pointer', padding:4 }}
+                                                style={{ position:'absolute', top:6, right:6, background:'none', border:'none', fontSize:14, color:'#bbb', cursor:'pointer', padding:2, lineHeight:1 }}
                                             >
                                                 &times;
                                             </button>
-                                            <div style={{ width:54, height:54, borderRadius:'50%', background:'#fff', boxShadow:'0 4px 10px rgba(0,0,0,.08)', marginBottom:12, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Poppins',sans-serif", fontWeight:600, fontSize:20, color:'#E72380' }}>
+                                            <div style={{ width:50, height:50, borderRadius:'50%', background:'linear-gradient(135deg, #f8bbd0, #f48fb1)', boxShadow:'0 4px 10px rgba(0,0,0,.08)', marginBottom:10, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Poppins',sans-serif", fontWeight:600, fontSize:18, color:'#fff' }}>
                                                 {u.initials || u.name.substring(0,2).toUpperCase()}
                                             </div>
-                                            <p style={{ fontFamily:"'Poppins',sans-serif", fontWeight:700, fontSize:13, color:'#111', textAlign:'center', lineHeight:1.2, marginBottom:4 }}>{u.name}</p>
-                                            <p style={{ fontFamily:"'Roboto',sans-serif", fontWeight:400, fontSize:11, color:'#9e9e9e', textAlign:'center' }}>{u.status}</p>
+                                            <p style={{ fontFamily:"'Poppins',sans-serif", fontWeight:700, fontSize:12, color:'#111', textAlign:'center', lineHeight:1.2, marginBottom:4, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', width:'100%', maxWidth:'100%' }}>{shortName}</p>
+                                            <p style={{ fontFamily:"'Roboto',sans-serif", fontWeight:400, fontSize:10, color:'#9e9e9e', textAlign:'center' }}>{u.status}</p>
                                         </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
