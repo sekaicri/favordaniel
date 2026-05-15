@@ -183,7 +183,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                         </thead>
                         <tbody className="divide-y divide-slate-50">
                             {usuarios.data.map((user) => (
-                                <tr key={user.id} className="hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => router.get(route('admin.usuarios.edit', user.id))}>
+                                <tr key={user.id} className="hover:bg-slate-50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-full bg-pink-50 text-[#e91e63] flex items-center justify-center font-bold text-xs shrink-0">
@@ -213,13 +213,13 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                                         {formatDate(user.ultimo_acceso)}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="flex items-center justify-center gap-2 text-[#e91e63]">
+                                        <div className="flex items-center justify-center">
                                             <Link
                                                 href={route('admin.usuarios.edit', user.id)}
-                                                className="p-1 hover:bg-pink-50 rounded transition-colors text-[#e91e63]"
-                                                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-pink-50 hover:bg-pink-100 rounded-full transition-colors text-[#e91e63] text-xs font-semibold no-underline"
                                             >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                                Editar
                                             </Link>
                                         </div>
                                     </td>

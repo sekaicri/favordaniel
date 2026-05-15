@@ -64,9 +64,9 @@ export default function Login({ status, canResetPassword }: { status?: string; c
                 .inp-blue { border-color: #4285f4 !important; }
                 .inp:focus { border-color:#4285f4; box-shadow:0 0 0 3px rgba(66,133,244,.12); }
                 .inp::placeholder { color:#808080; font-weight:300; }
-                .ucard { background:#EFF8FF; border-radius:9px; width:145px; height:164px;
-                    padding:14px 10px; display:flex; flex-direction:column; align-items:center;
-                    position:relative; cursor:pointer; transition:transform .2s,box-shadow .2s; }
+                .ucard { background:#EFF8FF; border-radius:9px; width:120px; height:140px;
+                    padding:12px 8px; display:flex; flex-direction:column; align-items:center;
+                    position:relative; cursor:pointer; transition:transform .2s,box-shadow .2s; flex-shrink:0; }
                 .ucard:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,.1); }
                 /* ── Mobile ── */
                 @media(max-width:768px){
@@ -108,9 +108,9 @@ export default function Login({ status, canResetPassword }: { status?: string; c
 
                         {/* User cards — anchored just below the pink/white boundary */}
                         {recentUsers.length > 0 && (
-                            <div className="users-section" style={{ position:'absolute', top:'56%', left:68 }}>
+                            <div className="users-section" style={{ position:'absolute', top:'56%', left:68, right:0 }}>
                                 <p style={{ fontFamily:"'Poppins',sans-serif", fontWeight:600, fontSize:15, color:'#333', marginBottom:16 }}>Inicia sesión como:</p>
-                                <div style={{ display:'flex', gap:20, flexWrap:'wrap' }}>
+                                <div style={{ display:'flex', flexDirection:'row', gap:16, flexWrap:'nowrap' }}>
                                     {recentUsers.slice(0, 3).map((u) => (
                                         <div key={u.email} className="ucard" onClick={() => selectRecent(u)}>
                                             <button
