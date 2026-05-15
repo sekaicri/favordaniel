@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useEffect } from 'react';
 import Dropdown from '@/Components/Dropdown';
 
 export default function AdminLayout({ children }: PropsWithChildren) {
@@ -8,6 +8,22 @@ export default function AdminLayout({ children }: PropsWithChildren) {
     // Extracción de iniciales
     const initials = user?.name ? user.name.substring(0, 2).toUpperCase() : 'AD';
     const isAdmin = user?.role === 'admin';
+
+    // Guardar usuario en localStorage para las tarjetas de login rápido
+    useEffect(() => {
+        if (user?.email && user?.name) {
+            const saved = localStorage.getItem('recent_celuworkers');
+            let users = saved ? JSON.parse(saved) : [];
+            const newUser = {
+                email: user.email,
+                name: user.name,
+                status: 'Activo recientemente',
+                initials: user.name.substring(0, 2).toUpperCase()
+            };
+            users = [newUser, ...users.filter((u: any) => u.email !== user.email)].slice(0, 3);
+            localStorage.setItem('recent_celuworkers', JSON.stringify(users));
+        }
+    }, []);
 
     // Mapeo de roles a nombres legibles
     const roleLabels: Record<string, string> = {
