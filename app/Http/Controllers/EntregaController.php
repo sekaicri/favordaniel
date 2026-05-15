@@ -48,8 +48,8 @@ class EntregaController extends Controller
                     throw new \Exception("Error al guardar el archivo en el almacenamiento.");
                 }
 
-                // Obtener la URL pública manualmente
-                $url = "https://" . env('AWS_BUCKET') . ".s3." . env('AWS_DEFAULT_REGION') . ".amazonaws.com/" . $fullPath;
+                // Obtener la URL pública usando el método oficial de Laravel
+                $url = Storage::disk('s3')->url($fullPath);
                 $urls[] = $url;
             }
 
