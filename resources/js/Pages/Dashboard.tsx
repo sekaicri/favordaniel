@@ -1,5 +1,5 @@
 import React, { useState, useRef, FormEvent, ChangeEvent } from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import GalleryModal from '@/Components/GalleryModal';
 
@@ -122,9 +122,7 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
     };
 
     return (
-        <AuthenticatedLayout
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Panel de Entregas</h2>}
-        >
+        <AdminLayout>
             <Head title="Panel de Entregas" />
 
             <div className="bg-[#fdf2f8] min-h-screen py-8 font-sans">
@@ -293,6 +291,6 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                 onNext={() => setGalleryIndex((prev) => (prev < galleryImages.length - 1 ? prev + 1 : 0))}
                 onPrev={() => setGalleryIndex((prev) => (prev > 0 ? prev - 1 : galleryImages.length - 1))}
             />
-        </AuthenticatedLayout>
+        </AdminLayout>
     );
 }

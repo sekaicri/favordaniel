@@ -12,6 +12,35 @@ use Inertia\Inertia;
 class EntregaController extends Controller
 {
     /**
+     * Redirige la raíz al login.
+     */
+    public function home()
+    {
+        return redirect()->route('login');
+    }
+
+    /**
+     * Vista de acceso denegado.
+     */
+    public function accessDenied()
+    {
+        return Inertia::render('Auth/AccessDenied');
+    }
+
+    /**
+     * Switchboard: redirige al dashboard correcto según el rol.
+     */
+    public function dashboardSwitchboard()
+    {
+        $role = Auth::user()->role;
+        return match($role) {
+            'admin' => redirect()->route('admin.usuarios'),
+            'repartidor' => redirect()->route('repartidor.deliveries'),
+            default => redirect()->route('access.denied'),
+        };
+    }
+
+    /**
      * API: Sube una evidencia a S3 y actualiza la base de datos.
      */
     public function uploadEvidence(Request $request)
@@ -77,10 +106,6 @@ class EntregaController extends Controller
      */
     public function index(Request $request)
     {
-        if (Auth::user()->role === 'admin' || Auth::user()->email === 'hola@celumovilstore.com.co') {
-            return redirect()->route('admin.usuarios');
-        }
-
         $query = Entrega::where('user_id', Auth::id());
 
         if ($request->has('fecha') && $request->fecha != '') {
