@@ -81,10 +81,21 @@ export default function AdminLayout({ children }: PropsWithChildren) {
                     {/* Links de navegación — solo admin y ocultar en móvil/tablet */}
                     {isAdmin && (
                         <div className="hidden md:flex items-center h-full gap-4 lg:gap-6 text-white text-xs lg:text-sm font-medium ml-4">
-                            <a href="#" className="hover:text-pink-200 transition-colors py-2">Inventarios</a>
-                            <a href="#" className="hover:text-pink-200 transition-colors py-2">Garantías</a>
-                            <a href="#" className="hover:text-pink-200 transition-colors py-2">Facturación</a>
-                            <Link href={route('admin.entregas')} className="h-full flex items-center border-b-2 border-white font-bold px-1 text-white no-underline">Entregas</Link>
+                            <Link 
+                                href={route('admin.usuarios')} 
+                                className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('admin.usuarios*') ? 'border-b-4 border-white font-black' : 'font-medium'}`}
+                            >
+                                Usuarios
+                            </Link>
+                            <Link 
+                                href={route('admin.entregas')} 
+                                className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('admin.entregas*') ? 'border-b-4 border-white font-black' : 'font-medium'}`}
+                            >
+                                Entregas
+                            </Link>
+                            <a href="#" className="h-full flex items-center px-1 text-white no-underline opacity-50 cursor-not-allowed font-medium">Inventarios</a>
+                            <a href="#" className="h-full flex items-center px-1 text-white no-underline opacity-50 cursor-not-allowed font-medium">Garantías</a>
+                            <a href="#" className="h-full flex items-center px-1 text-white no-underline opacity-50 cursor-not-allowed font-medium">Facturación</a>
                         </div>
                     )}
 
@@ -138,7 +149,8 @@ export default function AdminLayout({ children }: PropsWithChildren) {
                             ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
                         `}>
                             {/* Dashboard / Home */}
-                            <Link href={route('dashboard')} className={`p-2 rounded-lg transition-colors ${route().current('dashboard') ? 'text-[#e91e63] bg-pink-50' : 'text-slate-400 hover:text-[#e91e63]'}`}>
+                            <Link href={route('dashboard')} className={`p-2 rounded-lg transition-colors relative ${route().current('dashboard') ? 'text-[#e91e63] bg-pink-50' : 'text-slate-400 hover:text-[#e91e63]'}`}>
+                                {route().current('dashboard') && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#e91e63] -ml-2 rounded-r-md"></div>}
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                             </Link>
 
