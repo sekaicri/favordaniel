@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use App\Models\User;
+use App\Models\Entrega;
 
 class AdminController extends Controller
 {
@@ -121,6 +122,36 @@ class AdminController extends Controller
         $user->update($data);
 
         return redirect()->route('admin.usuarios')->with('status', '¡Usuario actualizado exitosamente!');
+    }
+
+    /**
+     * Web: Panel Admin (Gestión de entregas de todos los repartidores).
+     */
+    public function deliveriesIndex(Request $request)
+    {
+        $query = Entrega::with('user');
+
+        // Filtrar por búsqueda (Tracking ID o Nombre del repartidor)
+        if ($request->has('search') && $request->search != '') {
+            $query->where(function($q) use ($request) {
+                $q->where('tracking_id', 'like', '%' . $request->search . '%')
+                  ->orWhereHas('user', function($qu) use ($request) {
+                      $qu->where('name', 'like', '%' . $request->search . '%');
+                  });
+            });
+        }
+
+        // Filtrar por fecha
+        if ($request->has('fecha') && $request->fecha != '') {
+            $query->whereDate('created_at', $request->fecha);
+        }
+
+        $entregas = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        return Inertia::render('Admin/Deliveries', [
+            'entregas' => $entregas,
+            'filters' => $request->only(['search', 'fecha'])
+        ]);
     }
 
     /**

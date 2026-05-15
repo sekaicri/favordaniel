@@ -22,6 +22,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::post('/usuarios', [AdminController::class, 'usersStore'])->name('admin.usuarios.store');
     Route::get('/usuarios/{user}/editar', [AdminController::class, 'usersEdit'])->name('admin.usuarios.edit');
     Route::put('/usuarios/{user}', [AdminController::class, 'usersUpdate'])->name('admin.usuarios.update');
+    Route::get('/entregas', [AdminController::class, 'deliveriesIndex'])->name('admin.entregas');
 });
 
 // ─── Rutas Repartidor (role:repartidor) ─────────────────────────
