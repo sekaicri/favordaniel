@@ -70,16 +70,21 @@ export default function Login({ status, canResetPassword }: { status?: string; c
                 .ucard:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,.1); }
                 /* ── Mobile ── */
                 @media(max-width:768px){
+                    html, body { overflow:hidden!important; height:100%!important; }
                     .bg-white-band,.rocket-col,.users-section,.left-text { display:none!important; }
                     .bg-pink-band { height:100%!important; }
-                    .content-row { flex-direction:column!important; align-items:center!important; }
-                    .left-col { flex:0!important; width:100%!important; padding:32px 24px 16px!important; justify-content:flex-start!important; }
-                    .right-col { width:100%!important; padding:0 20px 40px!important; align-items:flex-start!important; }
-                    .login-card { border-radius:28px!important; padding:32px 24px 40px!important; }
+                    .content-row { flex-direction:column!important; align-items:center!important; height:100vh!important; overflow:hidden!important; }
+                    .left-col { flex:0 0 auto!important; width:100%!important; padding:20px 24px 0!important; justify-content:flex-start!important; }
+                    .right-col { flex:1!important; width:100%!important; padding:0 16px 20px!important; align-items:stretch!important; display:flex!important; }
+                    .login-card { border-radius:28px!important; padding:28px 24px 32px!important; min-height:0!important; flex:1!important; display:flex!important; flex-direction:column!important; justify-content:center!important; }
+                    .login-card h2 { font-size:36px!important; margin-bottom:20px!important; }
+                    .login-card p:first-child { font-size:16px!important; }
+                    .google-btn { height:50px!important; font-size:15px!important; border-radius:12px!important; margin-bottom:28px!important; }
+                    .inp { padding:12px 16px!important; font-size:13px!important; }
                 }
             ` }} />
 
-            <div style={{ minHeight:'100vh', position:'relative', overflow:'hidden' }}>
+            <div style={{ minHeight:'100vh', height:'100vh', position:'relative', overflow:'hidden' }}>
                 {/* Backgrounds — full viewport width */}
                 <div className="bg-pink-band"  style={{ position:'fixed', top:0, left:0, right:0, height:'52%', background:'#e91e63', zIndex:0 }} />
                 <div className="bg-white-band" style={{ position:'fixed', bottom:0, left:0, right:0, height:'48%', background:'#fff', zIndex:0 }} />
@@ -155,7 +160,7 @@ export default function Login({ status, canResetPassword }: { status?: string; c
                             {flash.error && <div style={{ marginBottom:14, fontSize:13, color:'#dc2626', background:'#fef2f2', padding:'10px 14px', borderRadius:10, border:'1px solid #fecaca' }}>{flash.error}</div>}
 
                             {/* Google */}
-                            <a href={route('auth.google')} style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:14, width:'100%', height:55, background:'#E9F1FF', border:'none', borderRadius:9, fontFamily:"'Poppins',sans-serif", fontWeight:400, fontSize:16, color:'#4285f4', cursor:'pointer', marginBottom:48, transition:'background .2s', textDecoration: 'none' }}
+                            <a href={route('auth.google')} className="google-btn" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:14, width:'100%', height:55, background:'#E9F1FF', border:'none', borderRadius:9, fontFamily:"'Poppins',sans-serif", fontWeight:400, fontSize:16, color:'#4285f4', cursor:'pointer', marginBottom:48, transition:'background .2s', textDecoration: 'none' }}
                                 onMouseOver={e=>(e.currentTarget.style.background='#dceeff')} onMouseOut={e=>(e.currentTarget.style.background='#eaf2ff')}>
                                 <img src="/images/google.png" alt="Google" style={{ width:20, height:20 }} />
                                 Inicia con tu correo coorporativo
