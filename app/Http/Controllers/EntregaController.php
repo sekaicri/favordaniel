@@ -85,7 +85,7 @@ class EntregaController extends Controller
 
         $entregas = $query->orderBy('created_at', 'desc')->get();
 
-        return Inertia::render('Dashboard', [
+        return Inertia::render('Repartidor/Index', [
             'entregas' => $entregas
         ]);
     }

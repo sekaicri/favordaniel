@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AdminLayout from '@/Layouts/AdminLayout';
+import AppLayout from '@/Layouts/AppLayout';
 import { Head, router, Link, usePage } from '@inertiajs/react';
 import GalleryModal from '@/Components/GalleryModal';
 
@@ -73,7 +73,7 @@ export default function AdminDeliveries({ entregas, filters = {} }: AdminDeliver
     };
 
     return (
-        <AdminLayout>
+        <AppLayout>
             <Head title="Historial de Entregas" />
 
             {flash.status && (
@@ -304,6 +304,6 @@ export default function AdminDeliveries({ entregas, filters = {} }: AdminDeliver
                 <span>© 2026 Celumovil Store. Todos los derechos reservados</span>
                 <span>Versión 1.0.0</span>
             </div>
-        </AdminLayout>
+        </AppLayout>
     );
 }

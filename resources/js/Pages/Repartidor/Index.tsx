@@ -1,5 +1,5 @@
 import React, { useState, useRef, FormEvent, ChangeEvent } from 'react';
-import AdminLayout from '@/Layouts/AdminLayout';
+import AppLayout from '@/Layouts/AppLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import GalleryModal from '@/Components/GalleryModal';
 
@@ -110,7 +110,7 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
     };
 
     return (
-        <AdminLayout>
+        <AppLayout>
             <Head title="Panel de Entregas" />
 
             <div className="max-w-xl mx-auto py-2 sm:py-4">
@@ -300,6 +300,6 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                 onNext={() => setGalleryIndex((prev) => (prev < galleryImages.length - 1 ? prev + 1 : 0))}
                 onPrev={() => setGalleryIndex((prev) => (prev > 0 ? prev - 1 : galleryImages.length - 1))}
             />
-        </AdminLayout>
+        </AppLayout>
     );
 }

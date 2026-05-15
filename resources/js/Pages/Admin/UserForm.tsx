@@ -1,5 +1,5 @@
 import React from 'react';
-import AdminLayout from '@/Layouts/AdminLayout';
+import AppLayout from '@/Layouts/AppLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
 
 interface Role {
@@ -44,7 +44,7 @@ export default function UserForm({ user, roles }: UserFormProps) {
     };
 
     return (
-        <AdminLayout>
+        <AppLayout>
             <Head title={isEditing ? 'Editar Usuario' : 'Nuevo Usuario'} />
 
             <div className="max-w-2xl mx-auto">
@@ -205,6 +205,6 @@ export default function UserForm({ user, roles }: UserFormProps) {
                     <span>Versión 1.0.0</span>
                 </div>
             </div>
-        </AdminLayout>
+        </AppLayout>
     );
 }

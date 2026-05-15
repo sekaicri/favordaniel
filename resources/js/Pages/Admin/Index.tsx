@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AdminLayout from '@/Layouts/AdminLayout';
+import AppLayout from '@/Layouts/AppLayout';
 import { Head, router, Link, usePage } from '@inertiajs/react';
 
 interface User {
@@ -81,7 +81,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
     };
 
     return (
-        <AdminLayout>
+        <AppLayout>
             <Head title="Gestión de Usuarios" />
 
             {flash.status && (
@@ -319,6 +319,6 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                 <span>© 2026 Celumovil Store. Todos los derechos reservados</span>
                 <span>Versión 1.0.0</span>
             </div>
-        </AdminLayout>
+        </AppLayout>
     );
 }

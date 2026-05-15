@@ -1,8 +1,8 @@
+import Dropdown from '@/Components/Dropdown';
 import { Link, usePage } from '@inertiajs/react';
 import React, { PropsWithChildren, useEffect, useState } from 'react';
-import Dropdown from '@/Components/Dropdown';
 
-export default function AdminLayout({ children }: PropsWithChildren) {
+export default function AppLayout({ children }: PropsWithChildren) {
     const user = usePage().props.auth.user;
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     
