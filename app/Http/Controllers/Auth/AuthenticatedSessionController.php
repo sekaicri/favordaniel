@@ -33,6 +33,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Registrar último acceso
+        Auth::user()->update(['ultimo_acceso' => now()]);
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

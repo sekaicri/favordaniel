@@ -11,14 +11,33 @@ use Inertia\Inertia;
 
 class EntregaController extends Controller
 {
+    /**
+     * Redirige la raíz al login.
+     */
     public function home()
     {
         return redirect()->route('login');
     }
 
+    /**
+     * Vista de acceso denegado.
+     */
     public function accessDenied()
     {
         return Inertia::render('Auth/AccessDenied');
+    }
+
+    /**
+     * Switchboard: redirige al dashboard correcto según el rol.
+     */
+    public function dashboardSwitchboard()
+    {
+        $role = Auth::user()->role;
+        return match($role) {
+            'admin' => redirect()->route('admin.usuarios'),
+            'repartidor' => redirect()->route('repartidor.deliveries'),
+            default => redirect()->route('access.denied'),
+        };
     }
 
     /**
@@ -83,25 +102,10 @@ class EntregaController extends Controller
     }
 
     /**
-     * Switchboard para redirigir al dashboard correcto según el rol.
-     */
-    public function dashboardSwitchboard()
-    {
-        $role = \Illuminate\Support\Facades\Auth::user()->role;
-        return match($role) {
-            'admin' => redirect()->route('admin.usuarios'),
-            'repartidor' => redirect()->route('repartidor.deliveries'),
-            default => redirect()->route('access.denied'),
-        };
-    }
-
-    /**
      * Web: Dashboard para el repartidor (ve sus propias fotos).
      */
     public function index(Request $request)
     {
-
-
         $query = Entrega::where('user_id', Auth::id());
 
         if ($request->has('fecha') && $request->fecha != '') {

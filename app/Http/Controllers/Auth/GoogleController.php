@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
 use Exception;
+use Carbon\Carbon;
 
 class GoogleController extends Controller
 {
@@ -57,8 +58,11 @@ class GoogleController extends Controller
             }
             
             Auth::login($user);
-            
-            return redirect()->intended(route('dashboard', absolute: false));
+
+            // Registrar último acceso
+            $user->update(['ultimo_acceso' => Carbon::now()]);
+
+            return redirect()->intended('dashboard');
             
         } catch (Exception $e) {
             return redirect()->route('login')->with('error', 'Error al autenticar con Google: ' . $e->getMessage());

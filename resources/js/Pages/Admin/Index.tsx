@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, Link, usePage } from '@inertiajs/react';
 
 interface User {
     id: number;
@@ -28,6 +28,9 @@ interface AdminIndexProps {
 }
 
 export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) {
+    const { props } = usePage<any>();
+    const flash = props.flash || {};
+
     const [filterState, setFilterState] = useState({
         search: filters.search || '',
         role: filters.role || '',
@@ -81,6 +84,12 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
         <AdminLayout>
             <Head title="Gestión de Usuarios" />
 
+            {flash.status && (
+                <div className="bg-[#f8bbd0] text-[#880e4f] p-4 rounded-xl mb-6 border border-[#f48fb1] font-semibold text-center shadow-sm">
+                    {flash.status}
+                </div>
+            )}
+
             <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 mb-8 flex items-center justify-between">
                 <div className="flex items-center gap-6">
                     <div className="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center text-[#e91e63]">
@@ -92,10 +101,13 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                     </div>
                 </div>
                 
-                <button className="bg-white border border-[#e91e63] text-[#e91e63] px-6 py-2.5 rounded-full font-semibold flex items-center gap-2 hover:bg-pink-50 transition-colors">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                <Link
+                    href={route('admin.usuarios.create')}
+                    className="bg-white border border-[#e91e63] text-[#e91e63] px-6 py-2.5 rounded-full font-semibold flex items-center gap-2 hover:bg-pink-50 transition-colors no-underline"
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
                     Nuevo Usuario
-                </button>
+                </Link>
             </div>
 
             <div className="mb-6">
@@ -171,7 +183,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                         </thead>
                         <tbody className="divide-y divide-slate-50">
                             {usuarios.data.map((user) => (
-                                <tr key={user.id} className="hover:bg-slate-50 transition-colors">
+                                <tr key={user.id} className="hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => router.get(route('admin.usuarios.edit', user.id))}>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-full bg-pink-50 text-[#e91e63] flex items-center justify-center font-bold text-xs shrink-0">
@@ -202,12 +214,13 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center justify-center gap-2 text-[#e91e63]">
-                                            <button className="p-1 hover:bg-pink-50 rounded transition-colors">
+                                            <Link
+                                                href={route('admin.usuarios.edit', user.id)}
+                                                className="p-1 hover:bg-pink-50 rounded transition-colors text-[#e91e63]"
+                                                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                                            >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                            </button>
-                                            <button className="p-1 hover:bg-pink-50 rounded transition-colors">
-                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 14a2 2 0 100-4 2 2 0 000 4zm0-6a2 2 0 100-4 2 2 0 000 4zm0 12a2 2 0 100-4 2 2 0 000 4z" /></svg>
-                                            </button>
+                                            </Link>
                                         </div>
                                     </td>
                                 </tr>
