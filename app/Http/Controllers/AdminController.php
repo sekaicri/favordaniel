@@ -64,19 +64,21 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
+            'password' => 'nullable|string|min:6',
             'role' => 'required|string',
             'telefono' => 'nullable|string|max:20',
             'estado' => 'required|boolean',
+            'permisos' => 'nullable|array',
         ]);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($request->password ?? \Illuminate\Support\Str::random(16)),
             'role' => $request->role,
             'telefono' => $request->telefono,
             'estado' => $request->estado,
+            'permisos' => $request->permisos,
         ]);
 
         return redirect()->route('admin.usuarios')->with('status', '¡Usuario creado exitosamente!');
@@ -88,7 +90,7 @@ class AdminController extends Controller
     public function usersEdit(User $user)
     {
         return Inertia::render('Admin/UserForm', [
-            'user' => $user->only(['id', 'name', 'email', 'role', 'telefono', 'estado', 'ultimo_acceso']),
+            'user' => $user->only(['id', 'name', 'email', 'role', 'telefono', 'estado', 'ultimo_acceso', 'permisos']),
             'roles' => $this->getAvailableRoles(),
         ]);
     }
@@ -105,6 +107,7 @@ class AdminController extends Controller
             'role' => 'required|string',
             'telefono' => 'nullable|string|max:20',
             'estado' => 'required|boolean',
+            'permisos' => 'nullable|array',
         ]);
 
         $data = [
@@ -113,6 +116,7 @@ class AdminController extends Controller
             'role' => $request->role,
             'telefono' => $request->telefono,
             'estado' => $request->estado,
+            'permisos' => $request->permisos,
         ];
 
         if ($request->filled('password')) {
@@ -122,6 +126,21 @@ class AdminController extends Controller
         $user->update($data);
 
         return redirect()->route('admin.usuarios')->with('status', '¡Usuario actualizado exitosamente!');
+    }
+
+    /**
+     * API: Eliminar usuario existente.
+     */
+    public function usersDestroy(User $user)
+    {
+        // Evitar que el administrador se elimine a sí mismo
+        if (Auth::id() === $user->id) {
+            return redirect()->route('admin.usuarios')->with('status', 'No puedes eliminar tu propia cuenta.');
+        }
+
+        $user->delete();
+
+        return redirect()->route('admin.usuarios')->with('status', '¡Usuario eliminado exitosamente!');
     }
 
     /**
@@ -160,13 +179,13 @@ class AdminController extends Controller
     private function getAvailableRoles(): array
     {
         return [
+            ['value' => 'director', 'label' => 'Director'],
             ['value' => 'admin', 'label' => 'Administrador'],
             ['value' => 'facturador', 'label' => 'Facturador'],
-            ['value' => 'inventarios', 'label' => 'Inventarios'],
+            ['value' => 'inventario', 'label' => 'Inventario'],
             ['value' => 'repartidor', 'label' => 'Repartidor'],
             ['value' => 'soporte', 'label' => 'Soporte'],
             ['value' => 'experiencia', 'label' => 'Experiencia'],
-            ['value' => 'user', 'label' => 'Usuario'],
         ];
     }
 }

@@ -8,7 +8,8 @@ export default function AppLayout({ children }: PropsWithChildren) {
     
     // Extracción de iniciales
     const initials = user?.name ? user.name.substring(0, 2).toUpperCase() : 'AD';
-    const isAdmin = user?.role === 'admin';
+    const hasFullMenu = user?.role !== 'repartidor';
+    const hasPermission = (module: string) => Array.isArray(user?.permisos) && user.permisos.includes(module);
 
     // Guardar usuario en localStorage para las tarjetas de login rápido
     useEffect(() => {
@@ -28,10 +29,11 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
     // Mapeo de roles a nombres legibles
     const roleLabels: Record<string, string> = {
+        'director': 'Director',
         'admin': 'Administrador',
         'repartidor': 'Repartidor',
         'facturador': 'Facturador',
-        'inventarios': 'Inventarios',
+        'inventario': 'Inventario',
         'soporte': 'Soporte',
         'experiencia': 'Experiencia',
         'user': 'Usuario',
@@ -44,7 +46,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
             <nav className="h-16 bg-[#e91e63] flex items-center justify-between px-4 sm:px-6 z-30 shrink-0 sticky top-0 shadow-md">
                 <div className="flex items-center gap-4 sm:gap-8 h-full">
                     {/* Botón de Menú Mobile (solo admin) */}
-                    {isAdmin && (
+                    {hasFullMenu && (
                         <button 
                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                             className="text-white md:hidden hover:bg-white/10 p-1 rounded-lg transition-colors"
@@ -65,7 +67,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                     </Link>
 
                     {/* Barra de búsqueda — solo admin y ocultar en móvil pequeño */}
-                    {isAdmin && (
+                    {hasFullMenu && (
                         <div className="hidden lg:flex relative items-center ml-4">
                             <input 
                                 type="text" 
@@ -79,30 +81,40 @@ export default function AppLayout({ children }: PropsWithChildren) {
                     )}
 
                     {/* Links de navegación — solo admin y ocultar en móvil/tablet */}
-                    {isAdmin && (
+                    {hasFullMenu && (
                         <div className="hidden md:flex items-center h-full gap-4 lg:gap-6 text-white text-xs lg:text-sm font-medium ml-4">
-                            <Link 
-                                href={route('admin.usuarios')} 
-                                className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('admin.usuarios*') ? 'border-b-4 border-white font-black' : 'font-medium'}`}
-                            >
-                                Usuarios
-                            </Link>
-                            <Link 
-                                href={route('admin.entregas')} 
-                                className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('admin.entregas*') ? 'border-b-4 border-white font-black' : 'font-medium'}`}
-                            >
-                                Entregas
-                            </Link>
-                            <a href="#" className="h-full flex items-center px-1 text-white no-underline opacity-50 cursor-not-allowed font-medium">Inventarios</a>
-                            <a href="#" className="h-full flex items-center px-1 text-white no-underline opacity-50 cursor-not-allowed font-medium">Garantías</a>
-                            <a href="#" className="h-full flex items-center px-1 text-white no-underline opacity-50 cursor-not-allowed font-medium">Facturación</a>
+                            {hasPermission('usuarios') && (
+                                <Link 
+                                    href={route('admin.usuarios')} 
+                                    className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('admin.usuarios*') ? 'border-b-4 border-white font-black' : 'font-medium'}`}
+                                >
+                                    Usuarios
+                                </Link>
+                            )}
+                            {hasPermission('entregas') && (
+                                <Link 
+                                    href={route('admin.entregas')} 
+                                    className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('admin.entregas*') ? 'border-b-4 border-white font-black' : 'font-medium'}`}
+                                >
+                                    Entregas
+                                </Link>
+                            )}
+                            {hasPermission('inventario') && (
+                                <a href="#" className="h-full flex items-center px-1 text-white no-underline opacity-50 cursor-not-allowed font-medium">Inventario</a>
+                            )}
+                            {hasPermission('reportes') && (
+                                <a href="#" className="h-full flex items-center px-1 text-white no-underline opacity-50 cursor-not-allowed font-medium">Reportes</a>
+                            )}
+                            {hasPermission('facturacion') && (
+                                <a href="#" className="h-full flex items-center px-1 text-white no-underline opacity-50 cursor-not-allowed font-medium">Facturación</a>
+                            )}
                         </div>
                     )}
 
                     {/* Repartidor: texto simple — ocultar en móvil pequeño */}
-                    {!isAdmin && (
+                    {!hasFullMenu && (
                         <div className="hidden sm:flex items-center h-full gap-6 text-white text-sm font-medium ml-4">
-                            <span className="h-full flex items-center border-b-2 border-white font-bold px-1">Panel de Entregas</span>
+                            <span className="h-full flex items-center border-b-2 border-white font-bold px-1">Dashboard</span>
                         </div>
                     )}
                 </div>
@@ -135,7 +147,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
             <div className="flex flex-1 overflow-hidden relative">
                 {/* Left Sidebar — solo admin, responsive */}
-                {isAdmin && (
+                {hasFullMenu && (
                     <>
                         {/* Overlay para cerrar el menú en móvil */}
                         {isSidebarOpen && (
@@ -155,26 +167,38 @@ export default function AppLayout({ children }: PropsWithChildren) {
                             </Link>
 
                             {/* Usuarios */}
-                            <Link href={route('admin.usuarios')} className={`p-2 rounded-lg transition-colors relative ${route().current('admin.usuarios*') ? 'text-[#e91e63] bg-pink-50' : 'text-slate-400 hover:text-[#e91e63]'}`}>
-                                {route().current('admin.usuarios*') && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#e91e63] -ml-2 rounded-r-md"></div>}
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                            </Link>
+                            {hasPermission('usuarios') && (
+                                <Link href={route('admin.usuarios')} className={`p-2 rounded-lg transition-colors relative ${route().current('admin.usuarios*') ? 'text-[#e91e63] bg-pink-50' : 'text-slate-400 hover:text-[#e91e63]'}`}>
+                                    {route().current('admin.usuarios*') && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#e91e63] -ml-2 rounded-r-md"></div>}
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                </Link>
+                            )}
 
                             {/* Entregas */}
-                            <Link href={route('admin.entregas')} className={`p-2 rounded-lg transition-colors relative ${route().current('admin.entregas*') ? 'text-[#e91e63] bg-pink-50' : 'text-slate-400 hover:text-[#e91e63]'}`}>
-                                {route().current('admin.entregas*') && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#e91e63] -ml-2 rounded-r-md"></div>}
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
-                            </Link>
+                            {hasPermission('entregas') && (
+                                <Link href={route('admin.entregas')} className={`p-2 rounded-lg transition-colors relative ${route().current('admin.entregas*') ? 'text-[#e91e63] bg-pink-50' : 'text-slate-400 hover:text-[#e91e63]'}`}>
+                                    {route().current('admin.entregas*') && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#e91e63] -ml-2 rounded-r-md"></div>}
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+                                </Link>
+                            )}
                             
-                            <button className="text-slate-400 hover:text-[#e91e63] transition-colors mt-auto">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                            </button>
-                            <button className="text-slate-400 hover:text-[#e91e63] transition-colors">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                            </button>
-                            <button className="text-slate-400 hover:text-[#e91e63] transition-colors">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            </button>
+                            {hasPermission('inventario') && (
+                                <button className="text-slate-400 hover:text-[#e91e63] transition-colors mt-auto">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                                </button>
+                            )}
+                            
+                            {hasPermission('configuracion') && (
+                                <button className="text-slate-400 hover:text-[#e91e63] transition-colors">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                </button>
+                            )}
+                            
+                            {hasPermission('reportes') && (
+                                <button className="text-slate-400 hover:text-[#e91e63] transition-colors">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </button>
+                            )}
                         </aside>
                     </>
                 )}

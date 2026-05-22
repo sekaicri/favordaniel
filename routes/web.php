@@ -15,14 +15,23 @@ Route::get('/dashboard', [AppController::class, 'dashboardSwitchboard'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// ─── Rutas Admin (role:admin) ───────────────────────────────────
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-    Route::get('/usuarios', [AdminController::class, 'usersIndex'])->name('admin.usuarios');
-    Route::get('/usuarios/crear', [AdminController::class, 'usersCreate'])->name('admin.usuarios.create');
-    Route::post('/usuarios', [AdminController::class, 'usersStore'])->name('admin.usuarios.store');
-    Route::get('/usuarios/{user}/editar', [AdminController::class, 'usersEdit'])->name('admin.usuarios.edit');
-    Route::put('/usuarios/{user}', [AdminController::class, 'usersUpdate'])->name('admin.usuarios.update');
-    Route::get('/entregas', [AdminController::class, 'deliveriesIndex'])->name('admin.entregas');
+// ─── Rutas Admin (Protegidas por módulo) ───────────────────────────
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    
+    // Módulo de Usuarios (Solo Soporte y Director)
+    Route::middleware(['role:soporte'])->group(function () {
+        Route::get('/usuarios', [AdminController::class, 'usersIndex'])->name('admin.usuarios');
+        Route::get('/usuarios/crear', [AdminController::class, 'usersCreate'])->name('admin.usuarios.create');
+        Route::post('/usuarios', [AdminController::class, 'usersStore'])->name('admin.usuarios.store');
+        Route::get('/usuarios/{user}/editar', [AdminController::class, 'usersEdit'])->name('admin.usuarios.edit');
+        Route::put('/usuarios/{user}', [AdminController::class, 'usersUpdate'])->name('admin.usuarios.update');
+        Route::delete('/usuarios/{user}', [AdminController::class, 'usersDestroy'])->name('admin.usuarios.destroy');
+    });
+
+    // Módulo de Entregas (Admin, Facturador, Experiencia, Director)
+    Route::middleware(['role:admin,facturador,experiencia'])->group(function () {
+        Route::get('/entregas', [AdminController::class, 'deliveriesIndex'])->name('admin.entregas');
+    });
 });
 
 // ─── Rutas Repartidor (role:repartidor) ─────────────────────────

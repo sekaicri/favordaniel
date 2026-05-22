@@ -67,9 +67,10 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
 
     const getRoleBadge = (role: string) => {
         const roles: Record<string, { label: string, classes: string }> = {
+            'director': { label: 'Director', classes: 'bg-indigo-50 text-indigo-600 border-indigo-200' },
             'admin': { label: 'Administrador', classes: 'bg-pink-50 text-pink-600 border-pink-200' },
             'facturador': { label: 'Facturador', classes: 'bg-green-50 text-green-600 border-green-200' },
-            'inventarios': { label: 'Inventarios', classes: 'bg-yellow-50 text-yellow-600 border-yellow-200' },
+            'inventario': { label: 'Inventario', classes: 'bg-yellow-50 text-yellow-600 border-yellow-200' },
             'repartidor': { label: 'Repartidor', classes: 'bg-cyan-50 text-cyan-500 border-cyan-200' },
             'soporte': { label: 'Soporte', classes: 'bg-orange-50 text-orange-500 border-orange-200' },
             'experiencia': { label: 'Experiencia', classes: 'bg-purple-50 text-purple-500 border-purple-200' },
@@ -85,7 +86,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
             <Head title="Gestión de Usuarios" />
 
             {flash.status && (
-                <div className="bg-[#f8bbd0] text-[#880e4f] p-4 rounded-xl mb-6 border border-[#f48fb1] font-semibold text-center shadow-sm">
+                <div className="bg-secondary-light/20 text-secondary-dark p-4 rounded-xl mb-6 border border-secondary-light/50 font-semibold text-center shadow-sm">
                     {flash.status}
                 </div>
             )}
@@ -93,18 +94,18 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
             <div className="bg-white rounded-3xl p-4 sm:p-8 shadow-sm border border-slate-100 mb-6 sm:mb-8">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="flex items-center gap-4 sm:gap-6">
-                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-pink-50 rounded-2xl flex items-center justify-center text-[#e91e63] shrink-0">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-secondary-light/10 rounded-2xl flex items-center justify-center text-primary shrink-0">
                             <svg className="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                         </div>
                         <div>
-                            <h1 className="text-2xl sm:text-4xl font-extrabold text-[#9c104a] m-0 mb-1 tracking-tight">Gestión de Usuarios</h1>
-                            <p className="text-slate-500 text-xs sm:text-base font-medium">Administra los usuarios del sistema y sus permisos</p>
+                            <h1 className="text-[2.5rem] font-bold text-primary tracking-tight leading-tight mb-1">Gestión de Usuarios</h1>
+                            <p className="text-slate-500 text-lg font-medium">Administra los usuarios del sistema y sus permisos</p>
                         </div>
                     </div>
                     
                     <Link
                         href={route('admin.usuarios.create')}
-                        className="bg-[#e91e63] text-white px-6 py-3 rounded-full font-semibold flex items-center justify-center gap-2 hover:bg-[#d81b60] transition-colors no-underline shadow-md sm:shadow-none"
+                        className="bg-primary text-white px-8 py-3.5 rounded-full font-bold text-sm flex items-center justify-center gap-2 hover:bg-secondary-dark transition-all no-underline shadow-[0_4px_14px_0_rgba(231,36,124,0.39)]"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
                         Nuevo Usuario
@@ -140,9 +141,10 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundPosition: `right 1rem center`, backgroundRepeat: `no-repeat`, backgroundSize: `1.2em 1.2em` }}
                             >
                                 <option value="">Todos los roles</option>
+                                <option value="director">Director</option>
                                 <option value="admin">Administrador</option>
                                 <option value="facturador">Facturador</option>
-                                <option value="inventarios">Inventarios</option>
+                                <option value="inventario">Inventario</option>
                                 <option value="repartidor">Repartidor</option>
                                 <option value="soporte">Soporte</option>
                                 <option value="experiencia">Experiencia</option>
@@ -163,7 +165,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                             </select>
                         </div>
 
-                        <button type="submit" className="bg-[#e91e63] text-white px-8 py-3 rounded-full font-semibold text-sm hover:bg-[#d81b60] transition-colors flex items-center justify-center gap-2 h-[46px] shadow-sm mt-2 sm:mt-0">
+                        <button type="submit" className="bg-primary text-white px-8 py-3 rounded-full font-semibold text-sm hover:bg-secondary-dark transition-colors flex items-center justify-center gap-2 h-[46px] shadow-sm mt-2 sm:mt-0">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
                             Filtrar
                         </button>
@@ -191,7 +193,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                                 <tr key={user.id} className="hover:bg-slate-50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-pink-50 text-[#e91e63] flex items-center justify-center font-bold text-xs shrink-0">
+                                            <div className="w-8 h-8 rounded-full bg-secondary-light/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
                                                 {user.name.substring(0, 2).toUpperCase()}
                                             </div>
                                             <span className="text-sm text-slate-500 font-medium">{user.name}</span>
@@ -218,13 +220,27 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                                         {formatDate(user.ultimo_acceso)}
                                     </td>
                                     <td className="px-6 py-4 text-center">
-                                        <Link
-                                            href={route('admin.usuarios.edit', user.id)}
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-50 hover:bg-pink-100 rounded-full transition-colors text-[#e91e63] text-xs font-semibold no-underline"
-                                        >
-                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                            Editar
-                                        </Link>
+                                        <div className="flex items-center justify-center gap-2">
+                                            <Link
+                                                href={route('admin.usuarios.edit', user.id)}
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary-light/10 hover:bg-secondary-light/20 rounded-full transition-colors text-primary text-xs font-semibold no-underline"
+                                            >
+                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                                Editar
+                                            </Link>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    if (confirm('¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.')) {
+                                                        router.delete(route('admin.usuarios.destroy', user.id));
+                                                    }
+                                                }}
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 rounded-full transition-colors text-red-500 text-xs font-semibold no-underline"
+                                            >
+                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                Eliminar
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -239,7 +255,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                     <div key={user.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-pink-50 text-[#e91e63] flex items-center justify-center font-bold text-sm shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-secondary-light/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
                                     {user.name.substring(0, 2).toUpperCase()}
                                 </div>
                                 <div className="flex flex-col">
@@ -247,12 +263,25 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                                     <span className="text-xs text-slate-400">{user.email}</span>
                                 </div>
                             </div>
-                            <Link
-                                href={route('admin.usuarios.edit', user.id)}
-                                className="w-10 h-10 bg-pink-50 text-[#e91e63] flex items-center justify-center rounded-xl hover:bg-pink-100 transition-colors"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                            </Link>
+                            <div className="flex gap-2">
+                                <Link
+                                    href={route('admin.usuarios.edit', user.id)}
+                                    className="w-10 h-10 bg-secondary-light/10 text-primary flex items-center justify-center rounded-xl hover:bg-secondary-light/20 transition-colors"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                </Link>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (confirm('¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.')) {
+                                            router.delete(route('admin.usuarios.destroy', user.id));
+                                        }
+                                    }}
+                                    className="w-10 h-10 bg-red-50 text-red-500 flex items-center justify-center rounded-xl hover:bg-red-100 transition-colors"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
+                            </div>
                         </div>
                         
                         <div className="grid grid-cols-2 gap-4 py-3 border-y border-slate-50">
@@ -306,7 +335,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                             <button 
                                 key={idx}
                                 onClick={() => link.url ? router.get(link.url, filterState as any) : null}
-                                className={`w-8 h-8 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-bold shrink-0 ${link.active ? 'bg-[#e91e63] text-white shadow-md' : 'text-pink-400 hover:bg-pink-50'}`}
+                                className={`w-8 h-8 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-bold shrink-0 ${link.active ? 'bg-primary text-white shadow-md' : 'text-primary hover:bg-secondary-light/10 border border-primary/20'}`}
                             >
                                 {link.label}
                             </button>

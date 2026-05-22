@@ -28,16 +28,10 @@ class AppController extends Controller
     }
 
     /**
-     * Switchboard: redirige al dashboard correcto según el rol.
-     * Para agregar un nuevo rol, solo añade un caso al match.
+     * Dashboard: landing page provisional para todos los usuarios.
      */
     public function dashboardSwitchboard()
     {
-        $role = Auth::user()->role;
-        return match($role) {
-            'admin' => redirect()->route('admin.usuarios'),
-            'repartidor' => redirect()->route('repartidor.deliveries'),
-            default => redirect()->route('access.denied'),
-        };
+        return Inertia::render('Dashboard');
     }
 }

@@ -28,6 +28,7 @@ class User extends Authenticatable
         'telefono',
         'estado',
         'ultimo_acceso',
+        'permisos',
     ];
 
     /**
@@ -52,6 +53,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'estado' => 'boolean',
             'ultimo_acceso' => 'datetime',
+            'permisos' => 'array',
         ];
     }
 

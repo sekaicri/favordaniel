@@ -14,9 +14,20 @@ class RoleMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        if (!Auth::check() || Auth::user()->role !== $role) {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $userRole = Auth::user()->role;
+
+        // El 'director' tiene acceso global administrativo
+        if ($userRole === 'director') {
+            return $next($request);
+        }
+
+        if (!in_array($userRole, $roles)) {
             return redirect()->route('access.denied');
         }
 

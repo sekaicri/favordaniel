@@ -77,7 +77,7 @@ export default function AdminDeliveries({ entregas, filters = {} }: AdminDeliver
             <Head title="Historial de Entregas" />
 
             {flash.status && (
-                <div className="bg-[#f8bbd0] text-[#880e4f] p-4 rounded-xl mb-6 border border-[#f48fb1] font-semibold text-center shadow-sm">
+                <div className="bg-secondary-light/20 text-secondary-dark p-4 rounded-xl mb-6 border border-secondary-light/50 font-semibold text-center shadow-sm">
                     {flash.status}
                 </div>
             )}
@@ -85,11 +85,11 @@ export default function AdminDeliveries({ entregas, filters = {} }: AdminDeliver
             <div className="bg-white rounded-3xl p-4 sm:p-8 shadow-sm border border-slate-100 mb-6 sm:mb-8">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="flex items-center gap-4 sm:gap-6">
-                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-pink-50 rounded-2xl flex items-center justify-center text-[#e91e63] shrink-0">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-secondary-light/10 rounded-2xl flex items-center justify-center text-primary shrink-0">
                             <svg className="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
                         </div>
                         <div>
-                            <h1 className="text-2xl sm:text-4xl font-extrabold text-[#9c104a] m-0 mb-1 tracking-tight">Historial de Entregas</h1>
+                            <h1 className="text-[2.5rem] font-bold text-primary tracking-tight leading-tight mb-1">Historial de Entregas</h1>
                             <p className="text-slate-500 text-xs sm:text-base font-medium">Control total de evidencias y repartidores</p>
                         </div>
                     </div>
@@ -125,7 +125,7 @@ export default function AdminDeliveries({ entregas, filters = {} }: AdminDeliver
                             />
                         </div>
 
-                        <button type="submit" className="bg-[#e91e63] text-white px-8 py-3 rounded-full font-semibold text-sm hover:bg-[#d81b60] transition-colors flex items-center justify-center gap-2 h-[46px] shadow-sm mt-2 sm:mt-0">
+                        <button type="submit" className="bg-primary text-white px-8 py-3 rounded-full font-semibold text-sm hover:bg-secondary-dark transition-colors flex items-center justify-center gap-2 h-[46px] shadow-sm mt-2 sm:mt-0">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
                             Filtrar
                         </button>
@@ -139,12 +139,12 @@ export default function AdminDeliveries({ entregas, filters = {} }: AdminDeliver
                     <table className="w-full text-left whitespace-nowrap">
                         <thead>
                             <tr className="border-b border-slate-100">
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 font-sans tracking-wide uppercase">Repartidor</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 font-sans tracking-wide uppercase">ID Guía</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 font-sans tracking-wide uppercase">Descripción</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Evidencia</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Fecha y Hora</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Estado</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 tracking-wide uppercase">Repartidor</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 tracking-wide uppercase">ID Guía</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 tracking-wide uppercase">Descripción</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center tracking-wide uppercase">Evidencia</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center tracking-wide uppercase">Fecha y Hora</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center tracking-wide uppercase">Estado</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
@@ -161,7 +161,7 @@ export default function AdminDeliveries({ entregas, filters = {} }: AdminDeliver
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="text-sm font-black text-[#880e4f]">{entrega.tracking_id}</span>
+                                            <span className="text-sm font-black text-secondary-dark">{entrega.tracking_id}</span>
                                         </td>
                                         <td className="px-6 py-4">
                                             <p className="text-xs text-slate-500 max-w-xs truncate m-0">{entrega.descripcion || 'Sin descripción'}</p>
@@ -246,7 +246,7 @@ export default function AdminDeliveries({ entregas, filters = {} }: AdminDeliver
                                 </div>
                                 <div className="flex-grow min-w-0">
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Guía</p>
-                                    <p className="text-base font-black text-[#880e4f] m-0 mb-2 truncate">{entrega.tracking_id}</p>
+                                    <p className="text-base font-black text-secondary-dark m-0 mb-2 truncate">{entrega.tracking_id}</p>
                                     <p className="text-xs text-slate-500 font-medium line-clamp-2 leading-relaxed">
                                         {entrega.descripcion || 'Sin observaciones registradas.'}
                                     </p>
@@ -282,7 +282,7 @@ export default function AdminDeliveries({ entregas, filters = {} }: AdminDeliver
                             <button 
                                 key={idx}
                                 onClick={() => link.url ? router.get(link.url, filterState as any) : null}
-                                className={`w-8 h-8 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-bold shrink-0 ${link.active ? 'bg-[#e91e63] text-white shadow-md' : 'text-pink-400 hover:bg-pink-50'}`}
+                                className={`w-8 h-8 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-bold shrink-0 ${link.active ? 'bg-primary text-white shadow-md' : 'text-pink-400 hover:bg-pink-50'}`}
                             >
                                 {link.label}
                             </button>
