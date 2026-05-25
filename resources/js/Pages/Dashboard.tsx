@@ -7,10 +7,12 @@ export default function Dashboard() {
     
     // Mapeo de roles a nombres legibles para la tarjeta
     const roleLabels: Record<string, string> = {
+        'director': 'Director',
         'admin': 'Administrador',
         'repartidor': 'Repartidor',
         'facturador': 'Facturador',
-        'inventarios': 'Inventarios',
+        'inventario': 'Inventario',
+        'inventarios': 'Inventario',
         'soporte': 'Soporte',
         'experiencia': 'Experiencia',
         'user': 'Usuario',

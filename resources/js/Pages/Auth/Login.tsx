@@ -163,7 +163,7 @@ export default function Login({ status, canResetPassword }: { status?: string; c
                             <a href={route('auth.google')} className="google-btn" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:14, width:'100%', height:55, background:'#E9F1FF', border:'none', borderRadius:9, fontFamily:"'Poppins',sans-serif", fontWeight:400, fontSize:16, color:'#4285f4', cursor:'pointer', marginBottom:48, transition:'background .2s', textDecoration: 'none' }}
                                 onMouseOver={e=>(e.currentTarget.style.background='#dceeff')} onMouseOut={e=>(e.currentTarget.style.background='#eaf2ff')}>
                                 <img src="/images/google.png" alt="Google" style={{ width:20, height:20 }} />
-                                Inicia con tu correo coorporativo
+                                Inicia con tu correo corporativo
                             </a>
 
                             {/* Form — no flex:1 so it stays compact */}

@@ -34,6 +34,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
         'repartidor': 'Repartidor',
         'facturador': 'Facturador',
         'inventario': 'Inventario',
+        'inventarios': 'Inventario',
         'soporte': 'Soporte',
         'experiencia': 'Experiencia',
         'user': 'Usuario',
@@ -119,19 +120,25 @@ export default function AppLayout({ children }: PropsWithChildren) {
                     )}
                 </div>
 
-                <div className="flex items-center gap-2 sm:gap-3 text-white relative z-50">
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white text-[#e91e63] flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 shadow-sm">
-                        {initials}
-                    </div>
-                    
+                <div className="flex items-center text-white relative z-50">
                     <Dropdown>
                         <Dropdown.Trigger>
-                            <span className="inline-flex rounded-md cursor-pointer items-center hover:opacity-80 transition-opacity">
-                                <div className="flex flex-col text-right leading-tight hidden xs:flex">
-                                    <span className="font-semibold text-xs sm:text-sm truncate max-w-[100px] sm:max-w-[150px]">{user?.name || 'Usuario'}</span>
-                                    <span className="text-[10px] sm:text-xs text-pink-200">{roleName}</span>
+                            <span className="inline-flex rounded-md cursor-pointer items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity">
+                                <div className="relative shrink-0">
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white text-[#e91e63] flex items-center justify-center font-bold text-xs sm:text-sm shadow-sm">
+                                        {initials}
+                                    </div>
+                                    {/* Punto blanco de notificaciones */}
+                                    <span className="absolute top-0 left-0 w-3 h-3 bg-white rounded-full border-2 border-[#e91e63] -translate-x-1/4 -translate-y-1/4 shadow-sm" />
                                 </div>
-                                <svg className="w-4 h-4 ml-1 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                
+                                <div className="flex flex-col text-left leading-tight hidden sm:flex">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="font-bold text-sm sm:text-base text-white truncate max-w-[120px] sm:max-w-[200px]">{user?.name || 'Usuario'}</span>
+                                        <svg className="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
+                                    </div>
+                                    <span className="text-[10px] sm:text-xs text-pink-100 font-medium">{roleName}</span>
+                                </div>
                             </span>
                         </Dropdown.Trigger>
 

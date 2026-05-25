@@ -131,7 +131,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                         </div>
                     </div>
                     
-                    <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:items-end">
                         <div className="flex-1 sm:w-48">
                             <label className="text-xs font-bold text-slate-500 mb-2 block ml-1">Rol</label>
                             <select 
