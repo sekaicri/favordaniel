@@ -42,6 +42,13 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        if (str_ends_with(strtolower($this->email), '@celumovilstore.com.co')) {
+            RateLimiter::clear($this->throttleKey());
+            throw ValidationException::withMessages([
+                'email' => 'Por favor, utiliza el botón de "Inicia con tu correo corporativo" (Google) para acceder.',
+            ]);
+        }
+
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
