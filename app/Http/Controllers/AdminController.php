@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use App\Models\User;
 use App\Models\Entrega;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 
 class AdminController extends Controller
 {
@@ -59,18 +61,8 @@ class AdminController extends Controller
     /**
      * API: Guardar nuevo usuario.
      */
-    public function usersStore(Request $request)
+    public function usersStore(StoreUserRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'nullable|string|min:6',
-            'role' => 'required|string',
-            'telefono' => 'nullable|string|max:20',
-            'estado' => 'required|boolean',
-            'permisos' => 'nullable|array',
-        ]);
-
         User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -98,18 +90,8 @@ class AdminController extends Controller
     /**
      * API: Actualizar usuario existente.
      */
-    public function usersUpdate(Request $request, User $user)
+    public function usersUpdate(UpdateUserRequest $request, User $user)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:6',
-            'role' => 'required|string',
-            'telefono' => 'nullable|string|max:20',
-            'estado' => 'required|boolean',
-            'permisos' => 'nullable|array',
-        ]);
-
         $data = [
             'name' => $request->name,
             'email' => $request->email,
