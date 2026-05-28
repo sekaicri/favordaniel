@@ -29,4 +29,8 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'cms' => [
+        'super_admin_email' => env('SUPER_ADMIN_EMAIL', 'hola@celumovilstore.com.co'),
+    ],
+
 ];

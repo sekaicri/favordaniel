@@ -9,8 +9,6 @@ use Exception;
 
 class GoogleAuthService
 {
-    private const SUPER_ADMIN_EMAIL = 'hola@celumovilstore.com.co';
-
     public function processGoogleUser($googleUser): User
     {
         $email = strtolower($googleUser->email);
@@ -24,7 +22,7 @@ class GoogleAuthService
 
     private function isSuperAdmin(string $email): bool
     {
-        return $email === self::SUPER_ADMIN_EMAIL;
+        return $email === config('services.cms.super_admin_email');
     }
 
     private function provisionSuperAdmin($googleUser, string $email): User
