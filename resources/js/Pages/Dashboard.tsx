@@ -2,7 +2,7 @@ import React from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, usePage } from '@inertiajs/react';
 
-export default function Dashboard() {
+export default function Dashboard({ metrics }: any) {
     const user = usePage().props.auth.user;
     
     // Mapeo de roles a nombres legibles para la tarjeta
@@ -51,34 +51,71 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Card Informativa 1 */}
-                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                    <div className="w-12 h-12 rounded-2xl bg-secondary-light/10 flex items-center justify-center text-primary mb-4">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            {user?.role === 'repartidor' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* Card Entregas del mes */}
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div className="absolute -top-6 -right-6 w-24 h-24 bg-pink-50 rounded-full blur-2xl group-hover:bg-pink-100 transition-colors duration-500"></div>
+                        <div className="w-12 h-12 rounded-2xl bg-pink-50 text-[#e91e63] flex items-center justify-center mb-4 relative z-10">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                        </div>
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest relative z-10">Entregas este mes</h3>
+                        <p className="text-4xl font-black text-slate-800 mt-2 mb-1 relative z-10">{metrics?.entregas_mes || 0}</p>
+                        <p className="text-xs font-bold text-green-500 relative z-10">+ Órdenes finalizadas</p>
                     </div>
-                    <h3 className="text-lg font-bold text-slate-800 mb-2">Novedades</h3>
-                    <p className="text-slate-500 text-sm font-medium">Próximamente estaremos agregando nuevas métricas y reportes para facilitar tu gestión diaria en el sistema.</p>
-                </div>
 
-                {/* Card Informativa 2 */}
-                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                    <div className="w-12 h-12 rounded-2xl bg-secondary-light/10 flex items-center justify-center text-primary mb-4">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                    {/* Card Novedades */}
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div className="absolute -top-6 -right-6 w-24 h-24 bg-orange-50 rounded-full blur-2xl group-hover:bg-orange-100 transition-colors duration-500"></div>
+                        <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center mb-4 relative z-10">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                        </div>
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest relative z-10">Novedades</h3>
+                        <p className="text-4xl font-black text-slate-800 mt-2 mb-1 relative z-10">{metrics?.novedades || 0}</p>
+                        <p className="text-xs font-bold text-slate-400 relative z-10">Incidentes reportados</p>
                     </div>
-                    <h3 className="text-lg font-bold text-slate-800 mb-2">Seguridad</h3>
-                    <p className="text-slate-500 text-sm font-medium">Tu sesión actual está protegida. Recuerda no compartir tus credenciales de acceso con nadie.</p>
-                </div>
 
-                {/* Card Informativa 3 */}
-                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                    <div className="w-12 h-12 rounded-2xl bg-secondary-light/10 flex items-center justify-center text-primary mb-4">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    {/* Card Ganancias */}
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div className="absolute -top-6 -right-6 w-24 h-24 bg-green-50 rounded-full blur-2xl group-hover:bg-green-100 transition-colors duration-500"></div>
+                        <div className="w-12 h-12 rounded-2xl bg-green-50 text-green-500 flex items-center justify-center mb-4 relative z-10">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest relative z-10">Ganancias</h3>
+                        <p className="text-4xl font-black text-slate-800 mt-2 mb-1 relative z-10">$ {metrics?.ganancias_estimadas || '0.00'}</p>
+                        <p className="text-xs font-bold text-slate-400 relative z-10">Estimado a facturar</p>
                     </div>
-                    <h3 className="text-lg font-bold text-slate-800 mb-2">Soporte Técnico</h3>
-                    <p className="text-slate-500 text-sm font-medium">Si presentas algún inconveniente con el panel, por favor contacta al área de tecnología o a un administrador.</p>
                 </div>
-            </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* Card Informativa 1 */}
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                        <div className="w-12 h-12 rounded-2xl bg-secondary-light/10 flex items-center justify-center text-primary mb-4">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-2">Novedades</h3>
+                        <p className="text-slate-500 text-sm font-medium">Próximamente estaremos agregando nuevas métricas y reportes para facilitar tu gestión diaria en el sistema.</p>
+                    </div>
+
+                    {/* Card Informativa 2 */}
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                        <div className="w-12 h-12 rounded-2xl bg-secondary-light/10 flex items-center justify-center text-primary mb-4">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-2">Seguridad</h3>
+                        <p className="text-slate-500 text-sm font-medium">Tu sesión actual está protegida. Recuerda no compartir tus credenciales de acceso con nadie.</p>
+                    </div>
+
+                    {/* Card Informativa 3 */}
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                        <div className="w-12 h-12 rounded-2xl bg-secondary-light/10 flex items-center justify-center text-primary mb-4">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-2">Soporte Técnico</h3>
+                        <p className="text-slate-500 text-sm font-medium">Si presentas algún inconveniente con el panel, por favor contacta al área de tecnología o a un administrador.</p>
+                    </div>
+                </div>
+            )}
         </AppLayout>
     );
 }

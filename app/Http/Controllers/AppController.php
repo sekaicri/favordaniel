@@ -32,6 +32,27 @@ class AppController extends Controller
      */
     public function dashboardSwitchboard()
     {
-        return Inertia::render('Dashboard');
+        $user = Auth::user();
+        $metrics = [];
+
+        if ($user && $user->role === 'repartidor') {
+            $currentMonth = \Carbon\Carbon::now()->month;
+            $currentYear = \Carbon\Carbon::now()->year;
+            
+            $entregasMes = \App\Models\Entrega::where('user_id', $user->id)
+                ->whereMonth('created_at', $currentMonth)
+                ->whereYear('created_at', $currentYear)
+                ->count();
+                
+            $metrics = [
+                'entregas_mes' => $entregasMes,
+                'ganancias_estimadas' => 0, // Por ahora placeholder
+                'novedades' => 0, // Por ahora placeholder
+            ];
+        }
+
+        return Inertia::render('Dashboard', [
+            'metrics' => $metrics
+        ]);
     }
 }

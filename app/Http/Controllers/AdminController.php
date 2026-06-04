@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Entrega;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Services\GoogleSheetsSyncService;
 
 class AdminController extends Controller
 {
@@ -132,10 +133,11 @@ class AdminController extends Controller
     {
         $query = Entrega::with('user');
 
-        // Filtrar por búsqueda (Tracking ID o Nombre del repartidor)
+        // Filtrar por búsqueda (Tracking ID o Nombre del repartidor o cliente)
         if ($request->has('search') && $request->search != '') {
             $query->where(function($q) use ($request) {
                 $q->where('tracking_id', 'like', '%' . $request->search . '%')
+                  ->orWhere('cliente', 'like', '%' . $request->search . '%')
                   ->orWhereHas('user', function($qu) use ($request) {
                       $qu->where('name', 'like', '%' . $request->search . '%');
                   });
@@ -147,12 +149,86 @@ class AdminController extends Controller
             $query->whereDate('created_at', $request->fecha);
         }
 
-        $entregas = $query->orderBy('created_at', 'desc')->paginate(15);
+        // Filtrar por estado
+        if ($request->has('estado') && $request->estado != '') {
+            if ($request->estado === 'por_asignar') {
+                $query->whereNull('user_id');
+            } elseif ($request->estado === 'por_entregar') {
+                $query->whereNotNull('user_id')->where('estado', '!=', 'entregado');
+            } elseif ($request->estado === 'entregados') {
+                $query->where('estado', 'entregado');
+            }
+        }
+
+        // Filtrar por canal de compra
+        if ($request->has('canal_compra') && $request->canal_compra != '') {
+            $query->where('canal_compra', $request->canal_compra);
+        }
+
+        $entregas = $query->orderBy('created_at', 'desc')->paginate(50); // Increased pagination for better dashboard view
+
+        // Si se busca un ID de tracking específico y coincide exactamente (solo 1 resultado) saltamos directo a la vista de auditoría.
+        if ($request->has('search') && $request->search != '' && $entregas->total() === 1) {
+            $onlyEntrega = $entregas->items()[0];
+            if ($onlyEntrega->tracking_id == $request->search) {
+                return redirect()->route('admin.entregas.show', $onlyEntrega->id);
+            }
+        }
+
+        $repartidores = User::where('role', 'repartidor')->get(['id', 'name']);
 
         return Inertia::render('Admin/Deliveries', [
             'entregas' => $entregas,
-            'filters' => $request->only(['search', 'fecha'])
+            'repartidores' => $repartidores,
+            'filters' => $request->only(['search', 'fecha', 'estado', 'canal_compra'])
         ]);
+    }
+
+    /**
+     * Web: Vista de detalle de una entrega para el Administrador.
+     */
+    public function showDelivery(Entrega $entrega)
+    {
+        // Cargar la relación del repartidor
+        $entrega->load('user');
+        
+        return Inertia::render('Admin/DeliveryDetail', [
+            'entrega' => $entrega
+        ]);
+    }
+
+    /**
+     * API: Asignar repartidor a una entrega.
+     */
+    public function assignDelivery(Request $request, Entrega $entrega)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $entrega->update([
+            'user_id' => $request->user_id,
+            'estado' => 'pendiente', // O el estado que represente "Por entregar"
+        ]);
+
+        // Disparar mensaje de WhatsApp de asignación
+        $msg = "Hola Celulover, vamos en camino a llevarte tu pedido.\nNo olvides tu palabra clave!";
+        app(\App\Services\WhatsAppService::class)->send($entrega->celular, $msg);
+
+        return redirect()->back()->with('status', 'Repartidor asignado correctamente.');
+    }
+
+    /**
+     * API: Desasignar repartidor de una entrega.
+     */
+    public function unassignDelivery(Entrega $entrega)
+    {
+        $entrega->update([
+            'user_id' => null,
+            'estado' => 'pendiente',
+        ]);
+
+        return redirect()->back()->with('status', 'Repartidor desasignado correctamente.');
     }
 
     /**
@@ -169,5 +245,70 @@ class AdminController extends Controller
             ['value' => 'soporte', 'label' => 'Soporte'],
             ['value' => 'experiencia', 'label' => 'Experiencia'],
         ];
+    }
+
+    /**
+     * API: Sincronizar entregas manualmente desde Google Sheets
+     */
+    public function syncSheets(GoogleSheetsSyncService $syncService)
+    {
+        $result = $syncService->syncDailyDeliveries();
+        
+        if ($result['success']) {
+            return redirect()->back()->with('status', $result['message']);
+        } else {
+            return redirect()->back()->withErrors(['error' => $result['message']]);
+        }
+    }
+    // ==========================================
+    // MOTOR DE REGLAS DE GANANCIA
+    // ==========================================
+
+    public function reglasIndex()
+    {
+        $reglas = \App\Models\ReglaGanancia::with('user')->orderBy('hora_inicio')->get();
+        $repartidores = User::where('role', 'repartidor')->get(['id', 'name']);
+
+        return Inertia::render('Admin/ReglasGanancia', [
+            'reglas' => $reglas,
+            'repartidores' => $repartidores
+        ]);
+    }
+
+    public function storeRegla(Request $request)
+    {
+        $data = $request->validate([
+            'user_id' => 'nullable|exists:users,id',
+            'hora_inicio' => 'required|date_format:H:i',
+            'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
+            'monto' => 'required|numeric|min:0',
+            'tipo' => 'required|in:a_tiempo,retraso',
+        ]);
+
+        \App\Models\ReglaGanancia::create($data);
+
+        return redirect()->back()->with('status', 'Regla de ganancia creada exitosamente.');
+    }
+
+    public function updateRegla(Request $request, \App\Models\ReglaGanancia $regla)
+    {
+        $data = $request->validate([
+            'user_id' => 'nullable|exists:users,id',
+            'hora_inicio' => 'required|date_format:H:i',
+            'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
+            'monto' => 'required|numeric|min:0',
+            'tipo' => 'required|in:a_tiempo,retraso',
+            'activa' => 'boolean'
+        ]);
+
+        $regla->update($data);
+
+        return redirect()->back()->with('status', 'Regla actualizada correctamente.');
+    }
+
+    public function destroyRegla(\App\Models\ReglaGanancia $regla)
+    {
+        $regla->delete();
+        return redirect()->back()->with('status', 'Regla eliminada.');
     }
 }

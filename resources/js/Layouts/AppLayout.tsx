@@ -42,25 +42,23 @@ export default function AppLayout({ children }: PropsWithChildren) {
     const roleName = roleLabels[user?.role || 'user'] || 'Usuario';
 
     return (
-        <div className="min-h-screen bg-[#fdf2f8] font-sans flex flex-col">
+        <div className="h-screen bg-[#fdf2f8] font-sans flex flex-col overflow-hidden">
             {/* Top Navbar */}
             <nav className="h-16 bg-[#e91e63] flex items-center justify-between px-4 sm:px-6 z-30 shrink-0 sticky top-0 shadow-md">
                 <div className="flex items-center gap-4 sm:gap-8 h-full">
-                    {/* Botón de Menú Mobile (solo admin) */}
-                    {hasFullMenu && (
-                        <button 
-                            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                            className="text-white md:hidden hover:bg-white/10 p-1 rounded-lg transition-colors"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                {isSidebarOpen ? (
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                ) : (
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                                )}
-                            </svg>
-                        </button>
-                    )}
+                    {/* Botón de Menú Mobile (para todos) */}
+                    <button 
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                        className="text-white md:hidden hover:bg-white/10 p-1 rounded-lg transition-colors"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            {isSidebarOpen ? (
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            ) : (
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                            )}
+                        </svg>
+                    </button>
 
                     <Link href={route('dashboard')} className="flex flex-col text-white no-underline">
                         <span className="font-black text-xl sm:text-2xl tracking-tighter leading-none" style={{ fontFamily:"'Montserrat',sans-serif" }}>CMS-UP</span>
@@ -100,6 +98,14 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                     Entregas
                                 </Link>
                             )}
+                            {hasPermission('repartidores') && (
+                                <Link 
+                                    href={route('admin.repartidores')} 
+                                    className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('admin.repartidores*') ? 'border-b-4 border-white font-black' : 'font-medium'}`}
+                                >
+                                    Repartidores
+                                </Link>
+                            )}
                             {hasPermission('inventario') && (
                                 <a href="#" className="h-full flex items-center px-1 text-white no-underline opacity-50 cursor-not-allowed font-medium">Inventario</a>
                             )}
@@ -114,8 +120,13 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
                     {/* Repartidor: texto simple — ocultar en móvil pequeño */}
                     {!hasFullMenu && (
-                        <div className="hidden sm:flex items-center h-full gap-6 text-white text-sm font-medium ml-4">
-                            <span className="h-full flex items-center border-b-2 border-white font-bold px-1">Dashboard</span>
+                        <div className="hidden sm:flex items-center h-full gap-4 text-white text-sm font-medium ml-4">
+                            <Link href={route('dashboard')} className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('dashboard') ? 'border-b-4 border-white font-black' : 'font-medium'}`}>
+                                Dashboard
+                            </Link>
+                            <Link href={route('repartidor.assign')} className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('repartidor.assign') ? 'border-b-4 border-white font-black' : 'font-medium'}`}>
+                                Entregas
+                            </Link>
                         </div>
                     )}
                 </div>
@@ -153,16 +164,15 @@ export default function AppLayout({ children }: PropsWithChildren) {
             </nav>
 
             <div className="flex flex-1 overflow-hidden relative">
-                {/* Left Sidebar — solo admin, responsive */}
-                {hasFullMenu && (
-                    <>
-                        {/* Overlay para cerrar el menú en móvil */}
-                        {isSidebarOpen && (
-                            <div 
-                                className="fixed inset-0 bg-black/50 z-20 md:hidden"
-                                onClick={() => setIsSidebarOpen(false)}
-                            />
-                        )}
+                {/* Left Sidebar — responsive para todos */}
+                <>
+                    {/* Overlay para cerrar el menú en móvil */}
+                    {isSidebarOpen && (
+                        <div 
+                            className="fixed inset-0 bg-black/50 z-20 md:hidden"
+                            onClick={() => setIsSidebarOpen(false)}
+                        />
+                    )}
                         <aside className={`
                             fixed md:static inset-y-0 left-0 w-[60px] bg-white border-r border-slate-200 flex flex-col items-center py-6 gap-6 shrink-0 z-30 transition-transform duration-300 ease-in-out
                             ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
@@ -172,6 +182,14 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                 {route().current('dashboard') && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#e91e63] -ml-2 rounded-r-md"></div>}
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                             </Link>
+
+                            {/* Entregas Repartidor */}
+                            {user?.role === 'repartidor' && (
+                                <Link href={route('repartidor.assign')} className={`p-2 rounded-lg transition-colors relative ${route().current('repartidor.assign') ? 'text-[#e91e63] bg-pink-50' : 'text-slate-400 hover:text-[#e91e63]'}`}>
+                                    {route().current('repartidor.assign') && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#e91e63] -ml-2 rounded-r-md"></div>}
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                                </Link>
+                            )}
 
                             {/* Usuarios */}
                             {hasPermission('usuarios') && (
@@ -186,6 +204,14 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                 <Link href={route('admin.entregas')} className={`p-2 rounded-lg transition-colors relative ${route().current('admin.entregas*') ? 'text-[#e91e63] bg-pink-50' : 'text-slate-400 hover:text-[#e91e63]'}`}>
                                     {route().current('admin.entregas*') && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#e91e63] -ml-2 rounded-r-md"></div>}
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+                                </Link>
+                            )}
+
+                            {/* Repartidores */}
+                            {hasPermission('repartidores') && (
+                                <Link href={route('admin.repartidores')} className={`p-2 rounded-lg transition-colors relative ${route().current('admin.repartidores*') ? 'text-[#e91e63] bg-pink-50' : 'text-slate-400 hover:text-[#e91e63]'}`}>
+                                    {route().current('admin.repartidores*') && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#e91e63] -ml-2 rounded-r-md"></div>}
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                                 </Link>
                             )}
                             
@@ -207,8 +233,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                 </button>
                             )}
                         </aside>
-                    </>
-                )}
+                </>
 
                 {/* Main Content Area */}
                 <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative z-0">
