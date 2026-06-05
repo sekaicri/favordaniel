@@ -185,7 +185,7 @@ class EntregaController extends Controller
         $msg = "Hola Celulover, vamos en camino a llevarte tu pedido.\nNo olvides tu palabra clave!";
         app(\App\Services\WhatsAppService::class)->send($entrega->celular, $msg);
 
-        return redirect()->back()->with('status', "¡Éxito! La entrega #{$tracking_id} te ha sido asignada correctamente.");
+        return redirect()->route('repartidor.assign')->with('status', "¡Éxito! La entrega #{$tracking_id} te ha sido asignada correctamente.");
     }
 
     /**
@@ -244,16 +244,48 @@ class EntregaController extends Controller
 
         // Verificamos si la palabra clave coincide (ignorando mayúsculas/minúsculas)
         if (strtoupper(trim($request->palabra_clave)) !== strtoupper($entrega->palabra_clave)) {
-            return redirect()->back()->withErrors(['palabra_clave' => 'La palabra clave no coincide. Inténtalo de nuevo.'])->withInput();
+            $entrega->intentos_fallidos = ($entrega->intentos_fallidos ?? 0) + 1;
+            
+            if ($entrega->intentos_fallidos >= 3) {
+                $entrega->estado = 'bloqueado';
+                $entrega->motivo_bloqueo = 'Palabra Clave';
+                $entrega->save();
+                return redirect()->route('repartidor.assign')->with('error', 'Se ha bloqueado la entrega por exceder los intentos de palabra clave.');
+            }
+            
+            $entrega->save();
+            return redirect()->back()->withErrors(['palabra_clave' => 'La palabra clave no coincide. Te quedan ' . (3 - $entrega->intentos_fallidos) . ' intentos.'])->withInput();
         }
 
-        // Si es correcta, podemos actualizar el documento que proporcionaron si era necesario
+        // Si es correcta, reiniciar intentos y actualizar documento
+        $entrega->intentos_fallidos = 0;
         if ($request->filled('documento')) {
             $entrega->documento = $request->documento;
-            $entrega->save();
         }
+        $entrega->save();
 
         // Redirigir a la vista de evidencias para terminar el flujo
         return redirect()->route('repartidor.evidence.view', $entrega->id)->with('status', 'Validación exitosa. Por favor ingresa las evidencias.');
+    }
+
+    /**
+     * Web: Bloquear una entrega manualmente (No pude entregar).
+     */
+    public function blockDelivery(Request $request, Entrega $entrega)
+    {
+        // Verificar que pertenezca a este repartidor
+        if ($entrega->user_id !== Auth::id()) {
+            abort(403, 'Acceso denegado');
+        }
+
+        $request->validate([
+            'motivo' => 'required|string',
+        ]);
+
+        $entrega->estado = 'bloqueado';
+        $entrega->motivo_bloqueo = $request->motivo;
+        $entrega->save();
+
+        return redirect()->route('repartidor.assign')->with('status', 'La entrega ha sido marcada como no entregada.');
     }
 }

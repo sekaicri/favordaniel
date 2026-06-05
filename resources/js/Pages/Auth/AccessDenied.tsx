@@ -28,7 +28,7 @@ export default function AccessDenied() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                         </div>
-                        <h1 className="text-5xl font-black mb-4 tracking-tight" style={{textShadow: '0 4px 12px rgba(0,0,0,0.15)'}}>
+                        <h1 className="text-5xl font-bold mb-4 tracking-tight" style={{textShadow: '0 4px 12px rgba(0,0,0,0.15)'}}>
                             Acceso Restringido
                         </h1>
                         <p className="text-xl font-medium text-pink-100 opacity-90 max-w-md mx-auto">
@@ -63,7 +63,7 @@ export default function AccessDenied() {
 
                             <Link 
                                 href={route('login')} 
-                                className="w-full flex justify-center items-center py-4 px-6 border border-transparent rounded-full shadow-lg text-sm font-bold text-white bg-gradient-to-r from-[#e91e63] to-[#c2185b] hover:from-[#d81b60] hover:to-[#ad1457] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all transform hover:-translate-y-0.5"
+                                className="w-full flex justify-center items-center py-4 px-6 border border-transparent rounded-full shadow-lg text-sm font-semibold text-white bg-gradient-to-r from-[#e91e63] to-[#c2185b] hover:from-[#d81b60] hover:to-[#ad1457] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all transform hover:-translate-y-0.5"
                             >
                                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />

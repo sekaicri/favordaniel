@@ -26,6 +26,19 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
         evidencias_comprimidas: [] as string[]
     });
 
+    const assignForm = useForm({
+        tracking_id: '',
+    });
+
+    const submitAssign = (e: FormEvent) => {
+        e.preventDefault();
+        assignForm.post(route('repartidor.assign.post'), {
+            onSuccess: () => {
+                assignForm.reset();
+            }
+        });
+    };
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -119,24 +132,55 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-3xl shadow-sm border border-pink-100 mb-4 text-[#e91e63]">
                         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
                     </div>
-                    <h1 className="text-[#880e4f] text-3xl font-black m-0 tracking-tighter leading-tight">Panel de Entregas</h1>
-                    <p className="text-[#e91e63] text-sm font-bold uppercase tracking-widest mt-1 opacity-70">Evidencias en tiempo real</p>
+                    <h1 className="text-[#880e4f] text-3xl font-bold m-0 tracking-tighter leading-tight">Panel de Entregas</h1>
+                    <p className="text-[#e91e63] text-sm font-semibold uppercase tracking-widest mt-1 opacity-70">Evidencias en tiempo real</p>
                 </header>
 
                 {flash?.status && (
-                    <div className="bg-[#f8bbd0] text-[#880e4f] p-4 rounded-2xl mb-6 border border-[#f48fb1] font-bold text-center shadow-sm animate-pulse">
+                    <div className="bg-[#f8bbd0] text-[#880e4f] p-4 rounded-2xl mb-6 border border-[#f48fb1] font-semibold text-center shadow-sm animate-pulse">
                         {flash.status}
                     </div>
                 )}
 
+                {/* Formulario de Asignación Rápida */}
+                <div className="bg-white p-6 sm:p-8 rounded-[40px] shadow-[0_20px_50px_rgba(233,30,99,0.1)] border border-pink-50 relative overflow-hidden mb-8">
+                    <form onSubmit={submitAssign} className="relative z-10">
+                        <label className="block text-slate-500 font-medium text-sm mb-3 ml-2">
+                            Número de Guía:
+                        </label>
+                        <div className="relative">
+                            <input 
+                                type="text" 
+                                value={assignForm.data.tracking_id}
+                                onChange={e => assignForm.setData('tracking_id', e.target.value)}
+                                required 
+                                placeholder="Ej: 34534545986745" 
+                                className="w-full py-4 pl-6 pr-14 border-2 border-slate-100 rounded-full text-base font-medium bg-slate-50 outline-none transition-all focus:border-[#e91e63] focus:bg-white focus:shadow-inner placeholder:text-slate-300"
+                            />
+                            <button 
+                                type="submit"
+                                disabled={assignForm.processing || !assignForm.data.tracking_id}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-pink-50 text-[#e91e63] flex items-center justify-center hover:bg-pink-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {assignForm.processing ? (
+                                    <svg className="animate-spin w-6 h-6" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                ) : (
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
+                                )}
+                            </button>
+                        </div>
+                        {assignForm.errors.tracking_id && <div className="text-red-500 text-xs font-semibold mt-3 ml-4">{assignForm.errors.tracking_id}</div>}
+                    </form>
+                </div>
+
                 {flash?.error && (
-                    <div className="bg-red-100 text-red-700 p-4 rounded-2xl mb-6 border border-red-200 font-bold text-center shadow-sm">
+                    <div className="bg-red-100 text-red-700 p-4 rounded-2xl mb-6 border border-red-200 font-semibold text-center shadow-sm">
                         {flash.error}
                     </div>
                 )}
                 
                 {Object.keys(errors).length > 0 && (
-                    <div className="bg-red-50 text-red-600 p-4 rounded-2xl mb-6 border border-red-100 font-bold text-xs text-center">
+                    <div className="bg-red-50 text-red-600 p-4 rounded-2xl mb-6 border border-red-100 font-semibold text-xs text-center">
                         ⚠️ Revisa los campos antes de enviar
                     </div>
                 )}
@@ -148,7 +192,7 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                     
                     <form onSubmit={submit} className="flex flex-col gap-6 relative z-10">
                         <div>
-                            <label className="block font-black text-[#880e4f] mb-2 text-[10px] uppercase tracking-[0.2em] ml-1">
+                            <label className="block font-bold text-[#880e4f] mb-2 text-[10px] uppercase tracking-[0.2em] ml-1">
                                 Guía de Seguimiento
                             </label>
                             <input 
@@ -159,11 +203,11 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                                 placeholder="Ej: CELU-12345" 
                                 className="w-full p-4 border-2 border-slate-100 rounded-2xl text-base bg-slate-50 outline-none transition-all duration-300 focus:border-[#e91e63] focus:bg-white focus:shadow-inner"
                             />
-                            {errors.tracking_id && <div className="text-red-500 text-[10px] font-bold mt-1 ml-1">{errors.tracking_id}</div>}
+                            {errors.tracking_id && <div className="text-red-500 text-[10px] font-semibold mt-1 ml-1">{errors.tracking_id}</div>}
                         </div>
 
                         <div>
-                            <label className="block font-black text-[#880e4f] mb-2 text-[10px] uppercase tracking-[0.2em] ml-1">
+                            <label className="block font-bold text-[#880e4f] mb-2 text-[10px] uppercase tracking-[0.2em] ml-1">
                                 Descripción / Notas
                             </label>
                             <textarea 
@@ -176,7 +220,7 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                         </div>
 
                         <div>
-                            <label className="block font-black text-[#880e4f] mb-2 text-[10px] uppercase tracking-[0.2em] ml-1">
+                            <label className="block font-bold text-[#880e4f] mb-2 text-[10px] uppercase tracking-[0.2em] ml-1">
                                 Adjuntar Fotos
                             </label>
                             <div className="relative">
@@ -188,10 +232,10 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                                     multiple 
                                     required 
                                     onChange={handleFileChange}
-                                    className="block w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-wider file:bg-pink-50 file:text-[#e91e63] hover:file:bg-pink-100 cursor-pointer"
+                                    className="block w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:bg-pink-50 file:text-[#e91e63] hover:file:bg-pink-100 cursor-pointer"
                                 />
                             </div>
-                            <p className="text-[#3b82f6] text-[10px] mt-3 font-bold flex items-center gap-1 opacity-80">
+                            <p className="text-[#3b82f6] text-[10px] mt-3 font-semibold flex items-center gap-1 opacity-80">
                                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
                                 Optimización de imagen activada
                             </p>
@@ -203,7 +247,7 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                                     {previewImages.map((src, idx) => (
                                         <div key={idx} className="relative group">
                                             <img src={src} className="w-20 h-20 object-cover rounded-xl shadow-md border-2 border-white ring-1 ring-pink-100" alt={`Preview ${idx}`} />
-                                            <div className="absolute -top-1 -right-1 bg-[#e91e63] text-white w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold">{idx + 1}</div>
+                                            <div className="absolute -top-1 -right-1 bg-[#e91e63] text-white w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-semibold">{idx + 1}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -213,7 +257,7 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                         <button 
                             type="submit" 
                             disabled={isProcessing || processing}
-                            className={`mt-2 text-white p-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-500 shadow-xl ${
+                            className={`mt-2 text-white p-5 rounded-2xl font-bold text-sm uppercase tracking-widest transition-all duration-500 shadow-xl ${
                                 isProcessing || processing 
                                     ? 'bg-slate-300 cursor-not-allowed shadow-none scale-95' 
                                     : 'bg-gradient-to-r from-[#e91e63] to-[#d81b60] hover:shadow-pink-200 hover:-translate-y-1 active:scale-95'
@@ -227,14 +271,14 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                 {/* Historial */}
                 <div className="mt-12 mb-8">
                     <div className="flex items-center justify-between mb-6 px-2">
-                        <h2 className="text-[#880e4f] m-0 text-xl font-black tracking-tight">Historial</h2>
+                        <h2 className="text-[#880e4f] m-0 text-xl font-bold tracking-tight">Historial</h2>
                         <div className="relative">
                             <input 
                                 type="date" 
                                 name="fecha" 
                                 defaultValue={filters?.fecha || ''}
                                 onChange={e => router.get(route('repartidor.deliveries'), { fecha: e.target.value }, { preserveState: true })}
-                                className="p-2 pl-3 pr-8 border border-pink-100 rounded-xl text-[10px] font-bold bg-white text-[#880e4f] outline-none focus:ring-1 focus:ring-[#e91e63] appearance-none"
+                                className="p-2 pl-3 pr-8 border border-pink-100 rounded-xl text-[10px] font-semibold bg-white text-[#880e4f] outline-none focus:ring-1 focus:ring-[#e91e63] appearance-none"
                             />
                             <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-pink-300">
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
@@ -255,7 +299,7 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                                             <>
                                                 <img src={urls[0]} className="w-full h-full object-cover" alt="Evidencia" />
                                                 {urls.length > 1 && (
-                                                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-white text-[10px] font-black">
+                                                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-white text-[10px] font-bold">
                                                         +{urls.length - 1}
                                                     </div>
                                                 )}
@@ -265,13 +309,13 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                                         )}
                                     </div>
                                     <div className="flex-grow min-w-0">
-                                        <p className="m-0 font-black text-[#880e4f] text-sm truncate uppercase tracking-tighter">Guía: {entrega.tracking_id}</p>
-                                        <p className="mt-1 mb-0 text-[10px] text-blue-500 font-black opacity-60 flex items-center gap-1">
+                                        <p className="m-0 font-bold text-[#880e4f] text-sm truncate uppercase tracking-tighter">Guía: {entrega.tracking_id}</p>
+                                        <p className="mt-1 mb-0 text-[10px] text-blue-500 font-bold opacity-60 flex items-center gap-1">
                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                             {formatDate(entrega.created_at)}
                                         </p>
                                     </div>
-                                    <div className="bg-[#f0fdf4] text-[#16a34a] px-3 py-2 rounded-xl text-[8px] font-black tracking-[0.1em] shadow-sm border border-green-100 hidden xs:block">
+                                    <div className="bg-[#f0fdf4] text-[#16a34a] px-3 py-2 rounded-xl text-[8px] font-bold tracking-[0.1em] shadow-sm border border-green-100 hidden xs:block">
                                         RECIBIDO
                                     </div>
                                 </div>
@@ -281,14 +325,14 @@ export default function Dashboard({ auth, entregas, flash, filters }: any) {
                                 <div className="text-pink-200 mb-3 flex justify-center">
                                     <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
                                 </div>
-                                <p className="text-pink-300 font-bold m-0 text-sm">No hay entregas pendientes.</p>
+                                <p className="text-pink-300 font-semibold m-0 text-sm">No hay entregas pendientes.</p>
                             </div>
                         )}
                     </div>
                 </div>
                 
                 <footer className="text-center py-8 opacity-40">
-                    <p className="text-[10px] font-black text-[#880e4f] tracking-[0.2em] uppercase">© 2026 Celumovil Store CMS</p>
+                    <p className="text-[10px] font-bold text-[#880e4f] tracking-[0.2em] uppercase">© 2026 Celumovil Store CMS</p>
                 </footer>
             </div>
 

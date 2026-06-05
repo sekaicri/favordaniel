@@ -146,8 +146,8 @@ export default function Evidence({ auth, entrega, errors, flash }: any) {
                         </svg>
                     </div>
                     <div>
-                        <h1 className="text-[#c2185b] text-2xl font-black tracking-tight leading-none mb-1">Entrega Actual</h1>
-                        <h2 className="text-slate-800 text-base font-bold">Guía #{entrega.tracking_id}</h2>
+                        <h1 className="text-[#c2185b] text-2xl font-bold tracking-tight leading-none mb-1">Entrega Actual</h1>
+                        <h2 className="text-slate-800 text-base font-semibold">Guía #{entrega.tracking_id}</h2>
                         <div className="flex items-center gap-1 text-slate-500 text-xs font-medium mt-0.5">
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                             Bogotá, Colombia
@@ -164,8 +164,8 @@ export default function Evidence({ auth, entrega, errors, flash }: any) {
                         </svg>
                     </div>
                     <div className="flex-1">
-                        <h3 className="text-[#e91e63] font-bold text-sm mb-1">Dirección:</h3>
-                        <p className="font-black text-slate-800 text-base leading-tight pr-2">{entrega.direccion || 'Sin dirección registrada'}</p>
+                        <h3 className="text-[#e91e63] font-semibold text-sm mb-1">Dirección:</h3>
+                        <p className="font-bold text-slate-800 text-base leading-tight pr-2">{entrega.direccion || 'Sin dirección registrada'}</p>
                         <p className="text-xs text-slate-500 font-medium mt-0.5">Bogotá, Colombia</p>
                         
                         {entrega.direccion && (
@@ -183,7 +183,7 @@ export default function Evidence({ auth, entrega, errors, flash }: any) {
 
                 {/* Tarjeta 2: Evidencia */}
                 <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-4">
-                    <h3 className="text-[#e91e63] font-bold text-base mb-4">Captura evidencia</h3>
+                    <h3 className="text-[#e91e63] font-semibold text-base mb-4">Captura evidencia</h3>
                     
                     {/* Inputs Ocultos */}
                     <input 
@@ -206,13 +206,13 @@ export default function Evidence({ auth, entrega, errors, flash }: any) {
                     <div className="flex flex-col gap-3">
                         <button 
                             onClick={() => fileInputRef.current?.click()}
-                            className="w-full py-3.5 bg-[#e91e63] text-white rounded-full font-bold text-base hover:bg-opacity-90 transition-colors"
+                            className="w-full py-3.5 bg-[#e91e63] text-white rounded-full font-semibold text-base hover:bg-opacity-90 transition-colors"
                         >
                             Elegir Archivos
                         </button>
                         <button 
                             onClick={() => cameraInputRef.current?.click()}
-                            className="w-full py-3.5 bg-white text-[#e91e63] border-2 border-[#e91e63] rounded-full font-bold text-base hover:bg-pink-50 transition-colors"
+                            className="w-full py-3.5 bg-white text-[#e91e63] border-2 border-[#e91e63] rounded-full font-semibold text-base hover:bg-pink-50 transition-colors"
                         >
                             Tomar foto
                         </button>
@@ -238,7 +238,7 @@ export default function Evidence({ auth, entrega, errors, flash }: any) {
 
                 {/* Tarjeta 3: Descripción */}
                 <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-8">
-                    <h3 className="text-[#e91e63] font-bold text-base mb-3">Descripción</h3>
+                    <h3 className="text-[#e91e63] font-semibold text-base mb-3">Descripción</h3>
                     <textarea 
                         rows={3}
                         value={descripcion}
@@ -250,7 +250,7 @@ export default function Evidence({ auth, entrega, errors, flash }: any) {
 
                 <button 
                     onClick={() => setShowSignatureModal(true)}
-                    className="w-full py-4 bg-[#e91e63] text-white rounded-full font-bold text-lg hover:bg-opacity-90 transition-colors shadow-md flex items-center justify-center gap-2 mb-8"
+                    className="w-full py-4 bg-[#e91e63] text-white rounded-full font-semibold text-lg hover:bg-opacity-90 transition-colors shadow-md flex items-center justify-center gap-2 mb-8"
                 >
                     Firmar y Finalizar
                 </button>
@@ -262,7 +262,7 @@ export default function Evidence({ auth, entrega, errors, flash }: any) {
                     <div className="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl animate-fade-in-up">
                         <div className="p-5 border-b border-slate-100 flex justify-between items-center">
                             <div>
-                                <h3 className="font-black text-slate-800 text-lg leading-tight">Firma del Cliente</h3>
+                                <h3 className="font-bold text-slate-800 text-lg leading-tight">Firma del Cliente</h3>
                                 <p className="text-xs text-slate-500 font-medium">Usa tu dedo para firmar</p>
                             </div>
                             <button onClick={() => setShowSignatureModal(false)} className="text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 p-2 rounded-full transition-colors">
@@ -290,14 +290,14 @@ export default function Evidence({ auth, entrega, errors, flash }: any) {
                         <div className="p-5 flex gap-3">
                             <button 
                                 onClick={clearSignature}
-                                className="flex-1 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-colors text-sm"
+                                className="flex-1 py-3 bg-slate-100 text-slate-600 font-semibold rounded-xl hover:bg-slate-200 transition-colors text-sm"
                             >
                                 Limpiar
                             </button>
                             <button 
                                 onClick={handleFinalSubmit}
                                 disabled={!hasDrawn || isSubmitting}
-                                className="flex-1 py-3 bg-[#e91e63] text-white font-bold rounded-xl hover:bg-opacity-90 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm"
+                                className="flex-1 py-3 bg-[#e91e63] text-white font-semibold rounded-xl hover:bg-opacity-90 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm"
                             >
                                 {isSubmitting && <svg className="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>}
                                 Aceptar

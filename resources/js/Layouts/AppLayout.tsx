@@ -61,7 +61,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                     </button>
 
                     <Link href={route('dashboard')} className="flex flex-col text-white no-underline">
-                        <span className="font-black text-xl sm:text-2xl tracking-tighter leading-none" style={{ fontFamily:"'Montserrat',sans-serif" }}>CMS-UP</span>
+                        <span className="font-bold text-xl sm:text-2xl tracking-tighter leading-none" style={{ fontFamily:"'Montserrat',sans-serif" }}>CMS-UP</span>
                         <span className="text-[8px] sm:text-[9px] italic opacity-80" style={{ fontFamily:"'Poppins',sans-serif" }}>Todo en un solo lugar</span>
                     </Link>
 
@@ -85,7 +85,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                             {hasPermission('usuarios') && (
                                 <Link 
                                     href={route('admin.usuarios')} 
-                                    className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('admin.usuarios*') ? 'border-b-4 border-white font-black' : 'font-medium'}`}
+                                    className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('admin.usuarios*') ? 'border-b-4 border-white font-bold' : 'font-medium'}`}
                                 >
                                     Usuarios
                                 </Link>
@@ -93,7 +93,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                             {hasPermission('entregas') && (
                                 <Link 
                                     href={route('admin.entregas')} 
-                                    className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('admin.entregas*') ? 'border-b-4 border-white font-black' : 'font-medium'}`}
+                                    className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('admin.entregas*') ? 'border-b-4 border-white font-bold' : 'font-medium'}`}
                                 >
                                     Entregas
                                 </Link>
@@ -101,7 +101,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                             {hasPermission('repartidores') && (
                                 <Link 
                                     href={route('admin.repartidores')} 
-                                    className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('admin.repartidores*') ? 'border-b-4 border-white font-black' : 'font-medium'}`}
+                                    className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('admin.repartidores*') ? 'border-b-4 border-white font-bold' : 'font-medium'}`}
                                 >
                                     Repartidores
                                 </Link>
@@ -121,10 +121,10 @@ export default function AppLayout({ children }: PropsWithChildren) {
                     {/* Repartidor: texto simple — ocultar en móvil pequeño */}
                     {!hasFullMenu && (
                         <div className="hidden sm:flex items-center h-full gap-4 text-white text-sm font-medium ml-4">
-                            <Link href={route('dashboard')} className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('dashboard') ? 'border-b-4 border-white font-black' : 'font-medium'}`}>
+                            <Link href={route('dashboard')} className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('dashboard') ? 'border-b-4 border-white font-bold' : 'font-medium'}`}>
                                 Dashboard
                             </Link>
-                            <Link href={route('repartidor.assign')} className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('repartidor.assign') ? 'border-b-4 border-white font-black' : 'font-medium'}`}>
+                            <Link href={route('repartidor.assign')} className={`h-full flex items-center px-1 text-white no-underline transition-all hover:opacity-80 ${route().current('repartidor.assign') ? 'border-b-4 border-white font-bold' : 'font-medium'}`}>
                                 Entregas
                             </Link>
                         </div>
@@ -136,7 +136,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                         <Dropdown.Trigger>
                             <span className="inline-flex rounded-md cursor-pointer items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity">
                                 <div className="relative shrink-0">
-                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white text-[#e91e63] flex items-center justify-center font-bold text-xs sm:text-sm shadow-sm">
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white text-[#e91e63] flex items-center justify-center font-semibold text-xs sm:text-sm shadow-sm">
                                         {initials}
                                     </div>
                                     {/* Punto blanco de notificaciones */}
@@ -145,7 +145,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                                 
                                 <div className="flex flex-col text-left leading-tight hidden sm:flex">
                                     <div className="flex items-center gap-1.5">
-                                        <span className="font-bold text-sm sm:text-base text-white truncate max-w-[120px] sm:max-w-[200px]">{user?.name || 'Usuario'}</span>
+                                        <span className="font-semibold text-sm sm:text-base text-white truncate max-w-[120px] sm:max-w-[200px]">{user?.name || 'Usuario'}</span>
                                         <svg className="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
                                     </div>
                                     <span className="text-[10px] sm:text-xs text-pink-100 font-medium">{roleName}</span>
@@ -235,10 +235,14 @@ export default function AppLayout({ children }: PropsWithChildren) {
                         </aside>
                 </>
 
-                {/* Main Content Area */}
                 <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative z-0">
-                    <div className="max-w-[1200px] mx-auto">
+                    <div className="max-w-[1200px] mx-auto w-full">
                         {children}
+                        
+                        <div className="flex flex-col sm:flex-row justify-between items-center text-[10px] text-slate-400 font-medium pb-8 px-2 gap-2 mt-4 sm:mt-0 text-center sm:text-left" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                            <span>© 2026 Celumovil Store. Todos los derechos reservados</span>
+                            <span>Versión 1.0.0</span>
+                        </div>
                     </div>
                 </main>
             </div>

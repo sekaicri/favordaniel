@@ -101,7 +101,7 @@ export default function UserForm({ user, roles }: UserFormProps) {
                             </svg>
                         </div>
                         <div>
-                            <h1 className="text-[2.5rem] font-bold text-primary tracking-tight leading-tight mb-1">
+                            <h1 className="text-[2.5rem] font-semibold text-primary tracking-tight leading-tight mb-1">
                                 {isEditing ? 'Editar Usuario' : 'Crear Usuario'}
                             </h1>
                             <p className="text-slate-500 text-lg font-medium">
@@ -113,7 +113,7 @@ export default function UserForm({ user, roles }: UserFormProps) {
                     <form onSubmit={submit} className="flex flex-col gap-10">
                         {/* Datos Personales */}
                         <div>
-                            <h3 className="text-primary font-bold text-base mb-6 tracking-wide">
+                            <h3 className="text-primary font-semibold text-base mb-6 tracking-wide">
                                 Datos personales:
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -192,7 +192,7 @@ export default function UserForm({ user, roles }: UserFormProps) {
 
                         {/* Información de Usuario */}
                         <div>
-                            <h3 className="text-primary font-bold text-base mb-6 tracking-wide uppercase">
+                            <h3 className="text-primary font-semibold text-base mb-6 tracking-wide uppercase">
                                 información de usuario:
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
@@ -283,7 +283,7 @@ export default function UserForm({ user, roles }: UserFormProps) {
 
                         {/* Permisos del Usuario */}
                         <div className="mt-4">
-                            <h3 className="text-primary font-bold text-[1.1rem] tracking-tight mb-1">
+                            <h3 className="text-primary font-semibold text-[1.1rem] tracking-tight mb-1">
                                 Permisos del usuario
                             </h3>
                             <p className="text-slate-400 text-sm mb-6">
@@ -326,7 +326,7 @@ export default function UserForm({ user, roles }: UserFormProps) {
                         <div className="flex flex-col sm:flex-row items-center justify-between pt-8 mt-2">
                             <Link
                                 href={route('admin.usuarios')}
-                                className="w-full sm:w-auto px-8 py-3.5 rounded-full border border-primary text-primary font-bold text-sm flex items-center justify-center gap-2 hover:bg-secondary-light/10 transition-colors"
+                                className="w-full sm:w-auto px-8 py-3.5 rounded-full border border-primary text-primary font-semibold text-sm flex items-center justify-center gap-2 hover:bg-secondary-light/10 transition-colors"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
                                 Cancelar
@@ -350,7 +350,7 @@ export default function UserForm({ user, roles }: UserFormProps) {
                                         }));
                                         clearErrors();
                                     }}
-                                    className="w-full sm:w-auto px-8 py-3.5 rounded-full border border-primary text-primary font-bold text-sm flex items-center justify-center gap-2 hover:bg-secondary-light/10 transition-colors"
+                                    className="w-full sm:w-auto px-8 py-3.5 rounded-full border border-primary text-primary font-semibold text-sm flex items-center justify-center gap-2 hover:bg-secondary-light/10 transition-colors"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                     Limpiar campos
@@ -359,7 +359,7 @@ export default function UserForm({ user, roles }: UserFormProps) {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className={`w-full sm:w-auto px-10 py-3.5 rounded-full bg-primary text-white font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+                                    className={`w-full sm:w-auto px-10 py-3.5 rounded-full bg-primary text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
                                         processing ? 'opacity-70 cursor-not-allowed' : 'hover:bg-secondary-dark shadow-[0_4px_14px_0_rgba(231,36,124,0.39)]'
                                     }`}
                                 >

@@ -162,18 +162,35 @@ class AdminController extends Controller
 
         // Filtrar por canal de compra
         if ($request->has('canal_compra') && $request->canal_compra != '') {
-            $query->where('canal_compra', $request->canal_compra);
+            $query->where('canal_compra', 'LIKE', '%' . $request->canal_compra . '%');
         }
 
         $entregas = $query->orderBy('created_at', 'desc')->paginate(50); // Increased pagination for better dashboard view
 
-        // Si se busca un ID de tracking específico y coincide exactamente (solo 1 resultado) saltamos directo a la vista de auditoría.
-        if ($request->has('search') && $request->search != '' && $entregas->total() === 1) {
-            $onlyEntrega = $entregas->items()[0];
-            if ($onlyEntrega->tracking_id == $request->search) {
-                return redirect()->route('admin.entregas.show', $onlyEntrega->id);
+        // Calcular condición de tiempo actual para las pendientes
+        $currentTime = \Carbon\Carbon::now()->format('H:i:s');
+        foreach ($entregas->items() as $entrega) {
+            if ($entrega->estado !== 'entregado') {
+                $regla = \App\Models\ReglaGanancia::where('activa', true)
+                    ->where('user_id', $entrega->user_id)
+                    ->where('hora_inicio', '<=', $currentTime)
+                    ->where('hora_fin', '>=', $currentTime)
+                    ->first();
+                
+                if (!$regla) {
+                    $regla = \App\Models\ReglaGanancia::where('activa', true)
+                        ->whereNull('user_id')
+                        ->where('hora_inicio', '<=', $currentTime)
+                        ->where('hora_fin', '>=', $currentTime)
+                        ->first();
+                }
+
+                $entrega->condicion_actual = $regla ? $regla->tipo : 'fuera_rango';
             }
         }
+
+        // El redireccionamiento automático se ha eliminado para que la vista principal (Admin/Deliveries)
+        // se encargue de renderizar el detalle si solo hay un resultado.
 
         $repartidores = User::where('role', 'repartidor')->get(['id', 'name']);
 

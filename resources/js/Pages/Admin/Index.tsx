@@ -98,14 +98,14 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                             <svg className="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                         </div>
                         <div>
-                            <h1 className="text-[2.5rem] font-bold text-primary tracking-tight leading-tight mb-1">Gestión de Usuarios</h1>
+                            <h1 className="text-[2.5rem] font-semibold text-primary tracking-tight leading-tight mb-1">Gestión de Usuarios</h1>
                             <p className="text-slate-500 text-lg font-medium">Administra los usuarios del sistema y sus permisos</p>
                         </div>
                     </div>
                     
                     <Link
                         href={route('admin.usuarios.create')}
-                        className="bg-primary text-white px-8 py-3.5 rounded-full font-bold text-sm flex items-center justify-center gap-2 hover:bg-secondary-dark transition-all no-underline shadow-[0_4px_14px_0_rgba(231,36,124,0.39)]"
+                        className="bg-primary text-white px-8 py-3.5 rounded-full font-semibold text-sm flex items-center justify-center gap-2 hover:bg-secondary-dark transition-all no-underline shadow-[0_4px_14px_0_rgba(231,36,124,0.39)]"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
                         Nuevo Usuario
@@ -116,7 +116,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
             <div className="mb-6">
                 <form onSubmit={handleFilterSubmit} className="flex flex-col lg:flex-row gap-4 lg:items-end">
                     <div className="flex-1">
-                        <label className="text-xs font-bold text-slate-500 mb-2 block ml-1">Buscar usuario</label>
+                        <label className="text-xs font-semibold text-slate-500 mb-2 block ml-1">Buscar usuario</label>
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -133,7 +133,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                     
                     <div className="flex flex-col sm:flex-row gap-4 sm:items-end">
                         <div className="flex-1 sm:w-48">
-                            <label className="text-xs font-bold text-slate-500 mb-2 block ml-1">Rol</label>
+                            <label className="text-xs font-semibold text-slate-500 mb-2 block ml-1">Rol</label>
                             <select 
                                 value={filterState.role}
                                 onChange={e => setFilterState({...filterState, role: e.target.value})}
@@ -152,7 +152,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                         </div>
 
                         <div className="flex-1 sm:w-48">
-                            <label className="text-xs font-bold text-slate-500 mb-2 block ml-1">Estado</label>
+                            <label className="text-xs font-semibold text-slate-500 mb-2 block ml-1">Estado</label>
                             <select 
                                 value={filterState.estado}
                                 onChange={e => setFilterState({...filterState, estado: e.target.value})}
@@ -179,13 +179,13 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                     <table className="w-full text-left whitespace-nowrap">
                         <thead>
                             <tr className="border-b border-slate-100">
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 font-sans tracking-wide uppercase">Usuario</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Rol</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Correo</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Teléfono</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Estado</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Último acceso</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Acciones</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 font-sans tracking-wide uppercase">Usuario</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 text-center font-sans tracking-wide uppercase">Rol</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 text-center font-sans tracking-wide uppercase">Correo</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 text-center font-sans tracking-wide uppercase">Teléfono</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 text-center font-sans tracking-wide uppercase">Estado</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 text-center font-sans tracking-wide uppercase">Último acceso</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 text-center font-sans tracking-wide uppercase">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
@@ -193,7 +193,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                                 <tr key={user.id} className="hover:bg-slate-50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-secondary-light/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                                            <div className="w-8 h-8 rounded-full bg-secondary-light/10 text-primary flex items-center justify-center font-semibold text-xs shrink-0">
                                                 {user.name.substring(0, 2).toUpperCase()}
                                             </div>
                                             <span className="text-sm text-slate-500 font-medium">{user.name}</span>
@@ -255,11 +255,11 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                     <div key={user.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-secondary-light/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-secondary-light/10 text-primary flex items-center justify-center font-semibold text-sm shrink-0">
                                     {user.name.substring(0, 2).toUpperCase()}
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-sm text-slate-700 font-bold">{user.name}</span>
+                                    <span className="text-sm text-slate-700 font-semibold">{user.name}</span>
                                     <span className="text-xs text-slate-400">{user.email}</span>
                                 </div>
                             </div>
@@ -286,22 +286,22 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                         
                         <div className="grid grid-cols-2 gap-4 py-3 border-y border-slate-50">
                             <div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Rol</p>
+                                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Rol</p>
                                 {getRoleBadge(user.role)}
                             </div>
                             <div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Estado</p>
-                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border ${user.estado ? 'border-green-200 text-green-700 bg-green-50' : 'border-slate-200 text-slate-500 bg-slate-50'}`}>
+                                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Estado</p>
+                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold border ${user.estado ? 'border-green-200 text-green-700 bg-green-50' : 'border-slate-200 text-slate-500 bg-slate-50'}`}>
                                     <span className={`w-1.5 h-1.5 rounded-full ${user.estado ? 'bg-green-500' : 'bg-slate-400'}`}></span>
                                     {user.estado ? 'Activo' : 'Inactivo'}
                                 </span>
                             </div>
                             <div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Teléfono</p>
+                                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Teléfono</p>
                                 <p className="text-xs text-slate-600 font-medium">{user.telefono || 'N/A'}</p>
                             </div>
                             <div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Visto el</p>
+                                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Visto el</p>
                                 <p className="text-xs text-slate-600 font-medium">{formatDate(user.ultimo_acceso)}</p>
                             </div>
                         </div>
@@ -335,7 +335,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                             <button 
                                 key={idx}
                                 onClick={() => link.url ? router.get(link.url, filterState as any) : null}
-                                className={`w-8 h-8 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-bold shrink-0 ${link.active ? 'bg-primary text-white shadow-md' : 'text-primary hover:bg-secondary-light/10 border border-primary/20'}`}
+                                className={`w-8 h-8 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-semibold shrink-0 ${link.active ? 'bg-primary text-white shadow-md' : 'text-primary hover:bg-secondary-light/10 border border-primary/20'}`}
                             >
                                 {link.label}
                             </button>
@@ -344,10 +344,7 @@ export default function AdminIndex({ usuarios, filters = {} }: AdminIndexProps) 
                 </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row justify-between items-center text-[10px] text-slate-400 font-medium pb-8 px-2 gap-2 mt-4 sm:mt-0 text-center sm:text-left">
-                <span>© 2026 Celumovil Store. Todos los derechos reservados</span>
-                <span>Versión 1.0.0</span>
-            </div>
+
         </AppLayout>
     );
 }

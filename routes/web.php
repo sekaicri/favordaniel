@@ -57,6 +57,7 @@ Route::middleware(['auth', 'role:repartidor'])->group(function () {
     Route::post('/entregas/asignar', [EntregaController::class, 'assignDelivery'])->name('repartidor.assign.post');
     Route::get('/entregas/{entrega}/detalle', [EntregaController::class, 'detailView'])->name('repartidor.delivery.detail');
     Route::post('/entregas/{entrega}/entregar', [EntregaController::class, 'attemptDelivery'])->name('repartidor.delivery.attempt');
+    Route::post('/entregas/{entrega}/bloquear', [EntregaController::class, 'blockDelivery'])->name('repartidor.delivery.block');
     Route::get('/entregas/{entrega}/evidencia', [EntregaController::class, 'evidenceView'])->name('repartidor.delivery.evidence');
     Route::get('/entregas/{entrega}/completada', [EntregaController::class, 'completedDetailView'])->name('repartidor.delivery.completed');
     Route::post('/entregas/{entrega}/evidencia', [EntregaController::class, 'uploadEvidence'])->name('repartidor.delivery.evidence.upload');

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, router, usePage } from '@inertiajs/react';
 import GalleryModal from '@/Components/GalleryModal';
+import DeliveryDetailCard from '@/Components/DeliveryDetailCard';
 
 interface User {
     id: number;
@@ -22,6 +23,7 @@ interface Entrega {
     condicion_tiempo?: string;
     palabra_clave?: string | null;
     canal_compra?: string | null;
+    condicion_actual?: string;
 }
 
 interface PaginatedData<T> {
@@ -37,6 +39,7 @@ interface AdminDeliveriesProps {
         search?: string;
         fecha?: string;
         estado?: string;
+        canal_compra?: string;
     };
 }
 
@@ -48,10 +51,11 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
     const [filterState, setFilterState] = useState({
         search: filters.search || '',
         fecha: filters.fecha || '',
-        estado: filters.estado || ''
+        estado: filters.estado || '',
+        canal_compra: filters.canal_compra || ''
     });
 
-    const [activeTab, setActiveTab] = useState<'por_entregar' | 'por_asignar'>('por_entregar');
+    const [activeTab, setActiveTab] = useState<'por_entregar' | 'por_asignar' | 'alertas'>('por_entregar');
     const [isSyncing, setIsSyncing] = useState(false);
 
     // Gallery State
@@ -64,9 +68,17 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
     const [selectedEntregaForAssign, setSelectedEntregaForAssign] = useState<Entrega | null>(null);
     const [selectedRepartidorId, setSelectedRepartidorId] = useState<number | ''>('');
 
+    const hasActiveFilters = filters.search || filters.fecha || filters.estado || filters.canal_compra;
+    const isSingleFilteredResult = hasActiveFilters && entregas.data.length === 1;
+
     const handleFilterSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(route('admin.entregas'), filterState as any, { preserveState: true });
+    };
+
+    const clearFilters = () => {
+        setFilterState({ search: '', fecha: '', estado: '', canal_compra: '' });
+        router.get(route('admin.entregas'));
     };
 
     const handleSyncSheets = () => {
@@ -100,22 +112,6 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
         }
     };
 
-    const openGallery = (images: string[], index: number) => {
-        setGalleryImages(images);
-        setGalleryIndex(index);
-        setIsGalleryOpen(true);
-    };
-
-    const parseUrls = (urls: any): string[] => {
-        if (!urls) return [];
-        if (Array.isArray(urls)) return urls;
-        try {
-            return JSON.parse(urls);
-        } catch {
-            return [];
-        }
-    };
-
     const formatDate = (dateStr: string) => {
         const date = new Date(dateStr);
         const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
@@ -123,11 +119,12 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
         return `${date.toLocaleDateString('es-ES', options)} - ${date.toLocaleTimeString('es-ES', timeOptions)}`;
     };
 
-    const porEntregar = useMemo(() => entregas.data.filter(e => e.user_id !== null && e.estado !== 'entregado'), [entregas.data]);
+    const porEntregar = useMemo(() => entregas.data.filter(e => e.user_id !== null && e.estado !== 'entregado' && e.estado !== 'bloqueado'), [entregas.data]);
     const porAsignar = useMemo(() => entregas.data.filter(e => e.user_id === null), [entregas.data]);
     const entregados = useMemo(() => entregas.data.filter(e => e.estado === 'entregado'), [entregas.data]);
+    const alertas = useMemo(() => entregas.data.filter(e => e.estado === 'bloqueado'), [entregas.data]);
 
-    const leftColumnList = activeTab === 'por_entregar' ? porEntregar : porAsignar;
+    const leftColumnList = activeTab === 'por_entregar' ? porEntregar : (activeTab === 'por_asignar' ? porAsignar : alertas);
 
     const getCanalBadge = (canal: string | null) => {
         if (!canal) return null;
@@ -139,7 +136,7 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
         else if (lower.includes('falabella')) bg = 'bg-green-100 text-green-700';
 
         return (
-            <span className={`text-[9px] uppercase font-black px-2.5 py-0.5 rounded-full inline-block tracking-wide border border-black/5 ${bg}`}>
+            <span className={`text-[9px] uppercase font-bold px-2.5 py-0.5 rounded-full inline-block tracking-wide border border-black/5 ${bg}`}>
                 {canal}
             </span>
         );
@@ -165,7 +162,7 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
                             </svg>
                         </div>
                         <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold text-[#e91e63] tracking-tight">{authUser?.name || 'Administrador'}</h1>
+                            <h1 className="text-2xl sm:text-3xl font-semibold text-[#e91e63] tracking-tight">{authUser?.name || 'Administrador'}</h1>
                             <p className="text-slate-500 font-medium text-sm sm:text-base">Gestión de evidencias en tiempo real</p>
                         </div>
                         
@@ -173,7 +170,7 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
                             <button 
                                 onClick={handleSyncSheets}
                                 disabled={isSyncing}
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-colors shadow-sm ${isSyncing ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600 text-white'}`}
+                                className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm transition-colors shadow-sm ${isSyncing ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600 text-white'}`}
                             >
                                 <svg className={`w-5 h-5 ${isSyncing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -187,7 +184,7 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
 
                     <form onSubmit={handleFilterSubmit} className="flex flex-col lg:flex-row gap-4 items-end">
                         <div className="flex-1 w-full relative">
-                            <label className="text-xs font-bold text-slate-500 mb-2 block ml-1">Buscar por Guía (opcional)</label>
+                            <label className="text-xs font-semibold text-slate-500 mb-2 block ml-1">Buscar por Guía (opcional)</label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -203,7 +200,7 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
                         </div>
                         
                         <div className="flex-1 w-full relative">
-                            <label className="text-xs font-bold text-slate-500 mb-2 block ml-1">Fecha específica (opcional)</label>
+                            <label className="text-xs font-semibold text-slate-500 mb-2 block ml-1">Fecha específica (opcional)</label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
@@ -217,13 +214,33 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
                             </div>
                         </div>
 
-                        <div className="w-full lg:w-48 relative">
-                            <label className="text-xs font-bold text-slate-500 mb-2 block ml-1">Estado (opcional)</label>
+                        <div className="w-full lg:w-40 relative shrink-0">
+                            <label className="text-xs font-semibold text-slate-500 mb-2 block ml-1">Canal (opcional)</label>
+                            <div className="relative">
+                                <select 
+                                    value={filterState.canal_compra}
+                                    onChange={e => setFilterState({...filterState, canal_compra: e.target.value})}
+                                    className="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-full text-sm outline-none focus:border-[#e91e63] focus:ring-1 focus:ring-[#e91e63] transition-colors text-slate-500 appearance-none bg-none"
+                                >
+                                    <option value="">Todos</option>
+                                    <option value="Meli">MercadoLibre</option>
+                                    <option value="Web">Página Web</option>
+                                    <option value="Falabella">Falabella</option>
+                                    <option value="Bancolombia">Tu360</option>
+                                </select>
+                                <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="w-full lg:w-40 relative shrink-0">
+                            <label className="text-xs font-semibold text-slate-500 mb-2 block ml-1">Estado (opcional)</label>
                             <div className="relative">
                                 <select 
                                     value={filterState.estado}
                                     onChange={e => setFilterState({...filterState, estado: e.target.value})}
-                                    className="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-full text-sm outline-none focus:border-[#e91e63] focus:ring-1 focus:ring-[#e91e63] transition-colors appearance-none text-slate-500"
+                                    className="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-full text-sm outline-none focus:border-[#e91e63] focus:ring-1 focus:ring-[#e91e63] transition-colors text-slate-500 appearance-none bg-none"
                                 >
                                     <option value="">Estado</option>
                                     <option value="entregado">Entregados</option>
@@ -235,149 +252,186 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
                             </div>
                         </div>
 
-                        <button type="submit" className="bg-[#e91e63] text-white px-8 py-3 rounded-full font-bold text-sm hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2 w-full lg:w-auto shrink-0 shadow-md h-[46px]">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
-                            Aplicar Filtro
-                        </button>
+                        <div className="flex flex-col lg:flex-row items-center gap-3 w-full lg:w-auto shrink-0 mt-2 lg:mt-0 lg:ml-2">
+                            <button type="submit" className="bg-[#e91e63] text-white px-6 py-3 rounded-full font-semibold text-sm hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2 w-full lg:w-auto shadow-md h-[46px]">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
+                                Aplicar Filtro
+                            </button>
+                            {hasActiveFilters && (
+                                <button type="button" onClick={clearFilters} className="bg-slate-100 text-slate-600 px-6 py-3 rounded-full font-semibold text-sm hover:bg-slate-200 transition-colors flex items-center justify-center shadow-sm h-[46px] w-full lg:w-auto border border-slate-200">
+                                    Limpiar
+                                </button>
+                            )}
+                        </div>
                     </form>
                 </div>
 
-                <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-16rem)] min-h-[600px]">
-                    
-                    {/* Left Column: Pendientes */}
-                    <div className="bg-white rounded-3xl p-6 shadow-sm border border-pink-50 flex flex-col h-[600px] flex-1">
-                        {/* Tabs */}
-                        <div className="flex gap-6 border-b border-slate-100 mb-6">
-                            <button 
-                                onClick={() => setActiveTab('por_entregar')}
-                                className={`pb-3 text-sm font-bold transition-colors relative ${activeTab === 'por_entregar' ? 'text-[#e91e63]' : 'text-slate-400 hover:text-slate-600'}`}
-                            >
-                                Por entregar ({porEntregar.length})
-                                {activeTab === 'por_entregar' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#e91e63] rounded-t-full"></div>}
-                            </button>
-                            <button 
-                                onClick={() => setActiveTab('por_asignar')}
-                                className={`pb-3 text-sm font-bold transition-colors relative ${activeTab === 'por_asignar' ? 'text-[#e91e63]' : 'text-slate-400 hover:text-slate-600'}`}
-                            >
-                                Por asignar ({porAsignar.length})
-                                {activeTab === 'por_asignar' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#e91e63] rounded-t-full"></div>}
-                            </button>
-                        </div>
+                {isSingleFilteredResult ? (
+                    <div className="flex justify-center mt-6">
+                        <DeliveryDetailCard entrega={entregas.data[0]} />
+                    </div>
+                ) : (
+                    <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-16rem)] min-h-[600px]">
+                        
+                        {/* Left Column: Pendientes */}
+                        <div className="bg-white rounded-3xl p-6 shadow-sm border border-pink-50 flex flex-col h-[600px] flex-1">
+                            {/* Tabs */}
+                            <div className="flex gap-6 border-b border-slate-100 mb-6">
+                                <button 
+                                    onClick={() => setActiveTab('por_entregar')}
+                                    className={`pb-3 text-sm font-semibold transition-colors relative ${activeTab === 'por_entregar' ? 'text-[#e91e63]' : 'text-slate-400 hover:text-slate-600'}`}
+                                >
+                                    Por entregar ({porEntregar.length})
+                                    {activeTab === 'por_entregar' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#e91e63] rounded-t-full"></div>}
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('por_asignar')}
+                                    className={`pb-3 text-sm font-semibold transition-colors relative ${activeTab === 'por_asignar' ? 'text-[#e91e63]' : 'text-slate-400 hover:text-slate-600'}`}
+                                >
+                                    Por asignar ({porAsignar.length})
+                                    {activeTab === 'por_asignar' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#e91e63] rounded-t-full"></div>}
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('alertas')}
+                                    className={`pb-3 text-sm font-semibold transition-colors relative ${activeTab === 'alertas' ? 'text-[#e91e63]' : 'text-slate-400 hover:text-slate-600'}`}
+                                >
+                                    Alertas ({alertas.length})
+                                    {activeTab === 'alertas' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#e91e63] rounded-t-full"></div>}
+                                </button>
+                            </div>
 
-                        <div className="flex-1 overflow-y-auto pr-2 space-y-4 custom-scrollbar">
-                            {leftColumnList.length === 0 ? (
-                                <div className="text-center text-slate-400 font-medium py-10">No hay entregas en esta categoría.</div>
-                            ) : (
-                                leftColumnList.map(entrega => (
-                                    <div key={entrega.id} className="border border-slate-100 rounded-2xl p-4 flex items-center justify-between hover:shadow-md transition-shadow bg-white relative overflow-hidden group">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-500 shrink-0">
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                                    <span className="text-[9px] uppercase font-bold text-orange-500 bg-orange-50 px-2 py-0.5 rounded-full inline-block">
-                                                        {activeTab === 'por_entregar' ? 'Por Entregar' : 'Por Asignar'}
-                                                    </span>
+                            <div className="flex-1 overflow-y-auto pr-2 space-y-4 custom-scrollbar">
+                                {leftColumnList.length === 0 ? (
+                                    <div className="text-center text-slate-400 font-medium py-10">No hay entregas en esta categoría.</div>
+                                ) : (
+                                    leftColumnList.map(entrega => (
+                                        <div 
+                                            key={entrega.id} 
+                                            onClick={() => router.get(route('admin.entregas.show', entrega.id))}
+                                            className="border border-slate-200 shadow-md hover:shadow-lg rounded-2xl p-4 flex items-center justify-between transition-all bg-white relative overflow-hidden group cursor-pointer active:scale-[0.98]"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border ${activeTab === 'alertas' ? 'bg-red-50 border-red-100 text-red-500' : 'bg-orange-50 border-orange-100 text-orange-500'}`}>
+                                                    {activeTab === 'alertas' ? (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                                    ) : (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                                        <span className={`text-[9px] uppercase font-semibold px-2 py-0.5 rounded-full inline-block ${activeTab === 'alertas' ? 'bg-red-50 text-red-500' : 'bg-orange-50 text-orange-500'}`}>
+                                                            {activeTab === 'por_entregar' ? 'Por Entregar' : (activeTab === 'alertas' ? 'Alerta' : 'Por Asignar')}
+                                                        </span>
+                                                        {getCanalBadge(entrega.canal_compra)}
+                                                    </div>
+                                                    <h3 className="text-sm font-bold text-slate-800 leading-tight">ID Entrega # {entrega.tracking_id}</h3>
+                                                    <p className="text-xs text-slate-500 font-medium mt-0.5 mb-1">{entrega.cliente || 'Sin nombre cliente'}</p>
                                                     {entrega.palabra_clave && (
-                                                        <span className="text-[9px] uppercase font-bold text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full inline-block">
+                                                        <span className="text-[9px] uppercase font-semibold text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full inline-block">
                                                             Clave: {entrega.palabra_clave}
                                                         </span>
                                                     )}
-                                                    {getCanalBadge(entrega.canal_compra)}
+                                                    {entrega.motivo_bloqueo && (
+                                                        <span className="text-[9px] uppercase font-semibold text-red-600 bg-red-100 px-2 py-0.5 rounded-full inline-block mt-1 ml-1">
+                                                            Motivo: {entrega.motivo_bloqueo}
+                                                        </span>
+                                                    )}
                                                 </div>
-                                                <h3 className="text-sm font-black text-slate-800 leading-tight">ID Entrega # {entrega.tracking_id}</h3>
-                                                <p className="text-xs text-slate-500 font-medium mt-0.5">{entrega.cliente || 'Sin nombre cliente'}</p>
                                             </div>
+                                                <div className="text-right flex flex-col items-end justify-center min-w-[120px]">
+                                                    {entrega.condicion_actual === 'retraso' && (
+                                                        <span className="text-[10px] font-bold text-red-500 mb-2">Se entregará con retraso</span>
+                                                    )}
+                                                    {entrega.condicion_actual === 'a_tiempo' && (
+                                                        <span className="text-[10px] font-bold text-green-500 mb-2">Se entregará a tiempo</span>
+                                                    )}
+                                                    {entrega.user_id ? (
+                                                        <div className="flex flex-col items-end gap-1">
+                                                            <span className="text-[10px] font-semibold text-[#e91e63] mb-1">Asignado a:<br/><span className="text-xs text-slate-800">{entrega.user?.name || 'Desconocido'}</span></span>
+                                                            <button 
+                                                                onClick={(e) => { e.stopPropagation(); handleUnassign(entrega.id); }}
+                                                                className="bg-[#ff0b0b] text-white px-4 py-1.5 rounded-xl hover:bg-red-600 transition-colors mt-1 shadow-sm"
+                                                                title="Desasignar"
+                                                            >
+                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zm12-3l-4 4m0-4l4 4" /></svg>
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex flex-col items-end gap-1">
+                                                            <span className="text-xs font-semibold text-slate-400 mb-1">Sin asignar</span>
+                                                            <button 
+                                                                onClick={(e) => { e.stopPropagation(); setSelectedEntregaForAssign(entrega); setIsAssignModalOpen(true); }}
+                                                                className="bg-[#e91e63] text-white hover:bg-opacity-90 px-4 py-1.5 rounded-xl transition-colors shadow-sm mt-1"
+                                                                title="Asignar Repartidor"
+                                                            >
+                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
                                         </div>
-                                            <div className="text-right flex flex-col items-end justify-center min-w-[120px]">
-                                                {entrega.user_id ? (
-                                                    <div className="flex flex-col items-end gap-1">
-                                                        <span className="text-[10px] font-bold text-[#e91e63] mb-1">Asignado a:<br/><span className="text-xs text-slate-800">{entrega.user?.name || 'Desconocido'}</span></span>
-                                                        <button 
-                                                            onClick={() => handleUnassign(entrega.id)}
-                                                            className="bg-[#ff0b0b] text-white px-4 py-1.5 rounded-xl hover:bg-red-600 transition-colors mt-1 shadow-sm"
-                                                            title="Desasignar"
-                                                        >
-                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zm12-3l-4 4m0-4l4 4" /></svg>
-                                                        </button>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Right Column: Entregados */}
+                        <div className="bg-white rounded-3xl p-6 shadow-sm border border-pink-50 flex flex-col h-[600px] flex-1">
+                            <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-3">
+                                <h2 className="text-sm font-semibold text-[#e91e63]">Entregados Recientemente</h2>
+                                <span className="text-xs font-semibold bg-green-100 text-green-700 px-2 py-1 rounded-full">{entregados.length}</span>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto pr-2 space-y-4 custom-scrollbar">
+                                {entregados.length === 0 ? (
+                                    <div className="text-center text-slate-400 font-medium py-10">No hay entregas completadas.</div>
+                                ) : (
+                                    entregados.map(entrega => (
+                                        <div 
+                                            key={entrega.id} 
+                                            onClick={() => router.get(route('admin.entregas.show', entrega.id))}
+                                            className="border border-slate-200 shadow-md hover:shadow-lg rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-all bg-white relative overflow-hidden group cursor-pointer"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-10 h-10 rounded-full bg-[#f0fdf4] border border-[#dcfce7] flex items-center justify-center text-[#22c55e] shrink-0">
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                                                </div>
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                                        <span className="text-[9px] uppercase font-bold text-[#22c55e] bg-[#f0fdf4] px-2.5 py-0.5 rounded-full inline-block">Entregada</span>
+                                                        {getCanalBadge(entrega.canal_compra)}
                                                     </div>
-                                                ) : (
-                                                    <div className="flex flex-col items-end gap-1">
-                                                        <span className="text-xs font-semibold text-slate-400 mb-1">Sin asignar</span>
-                                                        <button 
-                                                            onClick={() => { setSelectedEntregaForAssign(entrega); setIsAssignModalOpen(true); }}
-                                                            className="bg-[#e91e63] text-white hover:bg-opacity-90 px-4 py-1.5 rounded-xl transition-colors shadow-sm mt-1"
-                                                            title="Asignar Repartidor"
-                                                        >
-                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
-                                                        </button>
-                                                    </div>
+                                                    <h3 className="text-sm font-bold text-[#1e293b] leading-tight m-0">ID # {entrega.tracking_id}</h3>
+                                                    <p className="text-xs text-[#64748b] font-medium mt-0.5 m-0">{entrega.cliente || 'Sin nombre'}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="text-left flex flex-col justify-center pr-8 relative min-w-[140px]">
+                                                <span className="text-sm font-bold text-[#1e293b] mb-0.5">Entregado:</span>
+                                                <span className="text-xs text-slate-500 font-medium mb-1">
+                                                    {formatDate(entrega.updated_at)}
+                                                </span>
+                                                {entrega.condicion_tiempo === 'retraso' && (
+                                                    <span className="text-xs font-semibold text-red-500">Entregado con retraso</span>
                                                 )}
-                                            </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Right Column: Entregados */}
-                    <div className="bg-white rounded-3xl p-6 shadow-sm border border-pink-50 flex flex-col h-[600px] flex-1">
-                        <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-3">
-                            <h2 className="text-sm font-bold text-[#e91e63]">Entregados Recientemente</h2>
-                            <span className="text-xs font-bold bg-green-100 text-green-700 px-2 py-1 rounded-full">{entregados.length}</span>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto pr-2 space-y-4 custom-scrollbar">
-                            {entregados.length === 0 ? (
-                                <div className="text-center text-slate-400 font-medium py-10">No hay entregas completadas.</div>
-                            ) : (
-                                entregados.map(entrega => (
-                                    <div 
-                                        key={entrega.id} 
-                                        onClick={() => router.get(route('admin.entregas.show', entrega.id))}
-                                        className="border border-slate-100 rounded-3xl p-5 flex items-center justify-between hover:shadow-md active:scale-[0.98] transition-all bg-white relative overflow-hidden group cursor-pointer"
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-full bg-[#f0fdf4] border-2 border-[#dcfce7] flex items-center justify-center text-[#22c55e] shrink-0">
-                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                                    <span className="text-[10px] uppercase font-black text-[#22c55e] bg-[#f0fdf4] px-2.5 py-0.5 rounded-full inline-block">Entregada</span>
-                                                    {entrega.palabra_clave && (
-                                                        <span className="text-[10px] uppercase font-black text-[#a855f7] bg-[#f3e8ff] px-2.5 py-0.5 rounded-full inline-block">
-                                                            Clave: {entrega.palabra_clave}
-                                                        </span>
-                                                    )}
-                                                    {getCanalBadge(entrega.canal_compra)}
+                                                {entrega.condicion_tiempo === 'a_tiempo' && (
+                                                    <span className="text-xs font-semibold text-green-500">Entregado a tiempo</span>
+                                                )}
+                                                
+                                                {/* Arrow icon */}
+                                                <div className="absolute right-0 top-1/2 -translate-y-1/2 text-[#e91e63] group-hover:translate-x-1 transition-transform">
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
                                                 </div>
-                                                <h3 className="text-base font-black text-[#1e293b] leading-tight m-0">ID # {entrega.tracking_id}</h3>
-                                                <p className="text-sm text-[#64748b] font-medium mt-0.5 m-0">{entrega.cliente || 'Sin nombre'}</p>
                                             </div>
                                         </div>
-
-                                        <div className="text-right flex flex-col items-end justify-center pr-8 relative">
-                                            <span className="text-[10px] font-black text-[#1e293b] mb-1">Repartidor:</span>
-                                            <div className="flex items-center gap-1.5">
-                                                <div className="w-5 h-5 rounded-full bg-[#fce7f3] text-[#e91e63] flex items-center justify-center font-bold text-[8px]">
-                                                    {entrega.user?.name.substring(0, 2).toUpperCase()}
-                                                </div>
-                                                <span className="text-[10px] font-bold text-[#e91e63] truncate max-w-[80px]">{entrega.user?.name}</span>
-                                            </div>
-                                            
-                                            {/* Arrow icon on hover */}
-                                            <div className="absolute -right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                                <svg className="w-5 h-5 text-slate-300 group-hover:text-[#e91e63] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                            )}
+                                    ))
+                                )}
+                            </div>
                         </div>
-                    </div>
 
-                </div>
+                    </div>
+                )}
             </div>
 
             <GalleryModal 
@@ -395,7 +449,7 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
                     <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-fade-in-up">
                         <div className="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                             <div>
-                                <h3 className="text-lg font-black text-slate-800">Asignar Repartidor</h3>
+                                <h3 className="text-lg font-bold text-slate-800">Asignar Repartidor</h3>
                                 <p className="text-xs text-slate-500 font-medium">Selecciona quién entregará el ID #{selectedEntregaForAssign.tracking_id}</p>
                             </div>
                             <button onClick={() => { setIsAssignModalOpen(false); setSelectedEntregaForAssign(null); }} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 hover:bg-slate-300 transition-colors">
@@ -403,13 +457,13 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
                             </button>
                         </div>
                         <form onSubmit={handleAssign} className="p-6">
-                            <label className="text-xs font-bold text-slate-500 mb-2 block ml-1">Seleccionar Repartidor</label>
+                            <label className="text-xs font-semibold text-slate-500 mb-2 block ml-1">Seleccionar Repartidor</label>
                             <div className="relative mb-6">
                                 <select 
                                     required
                                     value={selectedRepartidorId}
                                     onChange={e => setSelectedRepartidorId(Number(e.target.value))}
-                                    className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm outline-none focus:border-[#e91e63] focus:ring-1 focus:ring-[#e91e63] transition-colors appearance-none font-medium text-slate-700"
+                                    className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm outline-none focus:border-[#e91e63] focus:ring-1 focus:ring-[#e91e63] transition-colors appearance-none bg-none font-medium text-slate-700"
                                 >
                                     <option value="" disabled>-- Selecciona un repartidor --</option>
                                     {repartidores.map(r => (
@@ -421,10 +475,10 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
                                 </div>
                             </div>
                             <div className="flex gap-3">
-                                <button type="button" onClick={() => { setIsAssignModalOpen(false); setSelectedEntregaForAssign(null); }} className="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">
+                                <button type="button" onClick={() => { setIsAssignModalOpen(false); setSelectedEntregaForAssign(null); }} className="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-semibold text-sm hover:bg-slate-200 transition-colors">
                                     Cancelar
                                 </button>
-                                <button type="submit" disabled={!selectedRepartidorId} className="flex-1 py-3 bg-[#e91e63] text-white rounded-xl font-bold text-sm shadow-md hover:bg-opacity-90 disabled:opacity-50 transition-all flex justify-center items-center gap-2">
+                                <button type="submit" disabled={!selectedRepartidorId} className="flex-1 py-3 bg-[#e91e63] text-white rounded-xl font-semibold text-sm shadow-md hover:bg-opacity-90 disabled:opacity-50 transition-all flex justify-center items-center gap-2">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                                     Confirmar Asignación
                                 </button>

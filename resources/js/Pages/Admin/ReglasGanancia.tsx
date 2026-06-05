@@ -109,7 +109,7 @@ export default function ReglasGanancia({ reglas, repartidores }: { reglas: Regla
                         </svg>
                     </div>
                     <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-primary tracking-tight">Motor de Ganancias</h1>
+                        <h1 className="text-2xl sm:text-3xl font-semibold text-primary tracking-tight">Motor de Ganancias</h1>
                         <p className="text-slate-500 font-medium text-sm sm:text-base">Automatiza cuánto se le paga a los repartidores según la hora de entrega</p>
                     </div>
                 </div>
@@ -119,11 +119,11 @@ export default function ReglasGanancia({ reglas, repartidores }: { reglas: Regla
                     {/* Formulario de Creación */}
                     <div className="lg:col-span-1">
                         <div className="bg-white rounded-3xl p-6 shadow-sm border border-pink-50 sticky top-8">
-                            <h2 className="text-lg font-bold text-slate-800 mb-6">{editingId ? 'Editar Regla' : 'Crear Nueva Regla'}</h2>
+                            <h2 className="text-lg font-semibold text-slate-800 mb-6">{editingId ? 'Editar Regla' : 'Crear Nueva Regla'}</h2>
                             
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 mb-2 uppercase">Repartidor (Opcional)</label>
+                                    <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase">Repartidor (Opcional)</label>
                                     <select 
                                         value={data.user_id}
                                         onChange={e => setData('user_id', e.target.value)}
@@ -138,7 +138,7 @@ export default function ReglasGanancia({ reglas, repartidores }: { reglas: Regla
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-500 mb-2 uppercase">Hora Inicio</label>
+                                        <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase">Hora Inicio</label>
                                         <input 
                                             type="time" 
                                             value={data.hora_inicio}
@@ -149,7 +149,7 @@ export default function ReglasGanancia({ reglas, repartidores }: { reglas: Regla
                                         {errors.hora_inicio && <p className="text-red-500 text-xs mt-1">{errors.hora_inicio}</p>}
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-500 mb-2 uppercase">Hora Fin</label>
+                                        <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase">Hora Fin</label>
                                         <input 
                                             type="time" 
                                             value={data.hora_fin}
@@ -162,10 +162,10 @@ export default function ReglasGanancia({ reglas, repartidores }: { reglas: Regla
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 mb-2 uppercase">Monto a pagar ($)</label>
+                                    <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase">Monto a pagar ($)</label>
                                     <div className="relative">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <span className="text-slate-400 font-bold">$</span>
+                                            <span className="text-slate-400 font-semibold">$</span>
                                         </div>
                                         <input 
                                             type="number" 
@@ -174,18 +174,18 @@ export default function ReglasGanancia({ reglas, repartidores }: { reglas: Regla
                                             onChange={e => setData('monto', e.target.value)}
                                             required
                                             placeholder="Ej: 5000"
-                                            className="w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary font-bold text-slate-700"
+                                            className="w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary font-semibold text-slate-700"
                                         />
                                     </div>
                                     {errors.monto && <p className="text-red-500 text-xs mt-1">{errors.monto}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 mb-2 uppercase">Tipo de Tarifa</label>
+                                    <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase">Tipo de Tarifa</label>
                                     <select 
                                         value={data.tipo}
                                         onChange={e => setData('tipo', e.target.value)}
-                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary font-bold text-slate-700"
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary font-semibold text-slate-700"
                                     >
                                         <option value="a_tiempo">Entrega A Tiempo (Exitosa)</option>
                                         <option value="retraso">Entrega Con Retraso (Penalidad/Menor Ganancia)</option>
@@ -197,7 +197,7 @@ export default function ReglasGanancia({ reglas, repartidores }: { reglas: Regla
                                     <button 
                                         type="submit" 
                                         disabled={isSubmitting}
-                                        className="flex-1 bg-primary text-white py-3.5 rounded-xl font-bold text-sm shadow-sm hover:bg-opacity-90 transition-all flex items-center justify-center gap-2"
+                                        className="flex-1 bg-primary text-white py-3.5 rounded-xl font-semibold text-sm shadow-sm hover:bg-opacity-90 transition-all flex items-center justify-center gap-2"
                                     >
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
                                         {editingId ? 'Actualizar Regla' : 'Guardar Regla'}
@@ -206,7 +206,7 @@ export default function ReglasGanancia({ reglas, repartidores }: { reglas: Regla
                                         <button 
                                             type="button" 
                                             onClick={cancelEdit}
-                                            className="px-6 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors"
+                                            className="px-6 bg-slate-100 text-slate-600 rounded-xl font-semibold text-sm hover:bg-slate-200 transition-colors"
                                         >
                                             Cancelar
                                         </button>
@@ -219,13 +219,13 @@ export default function ReglasGanancia({ reglas, repartidores }: { reglas: Regla
                     {/* Lista de Reglas */}
                     <div className="lg:col-span-2">
                         <div className="bg-white rounded-3xl p-6 shadow-sm border border-pink-50 h-[calc(100vh-12rem)] flex flex-col">
-                            <h2 className="text-lg font-bold text-slate-800 mb-6">Reglas Configuradas</h2>
+                            <h2 className="text-lg font-semibold text-slate-800 mb-6">Reglas Configuradas</h2>
                             
                             <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
                                 {reglas.length === 0 ? (
                                     <div className="text-center py-16 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl">
                                         <svg className="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
-                                        <p className="text-slate-500 font-bold">No hay reglas de ganancias configuradas.</p>
+                                        <p className="text-slate-500 font-semibold">No hay reglas de ganancias configuradas.</p>
                                         <p className="text-slate-400 text-xs mt-1">Crea tu primera regla a la izquierda.</p>
                                     </div>
                                 ) : (
@@ -238,23 +238,23 @@ export default function ReglasGanancia({ reglas, repartidores }: { reglas: Regla
                                                 <div>
                                                     <div className="flex gap-2 mb-1">
                                                         {regla.user_id ? (
-                                                            <span className="text-[9px] font-black uppercase bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full">Específica: {regla.user?.name}</span>
+                                                            <span className="text-[9px] font-bold uppercase bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full">Específica: {regla.user?.name}</span>
                                                         ) : (
-                                                            <span className="text-[9px] font-black uppercase bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full">Global (TODOS)</span>
+                                                            <span className="text-[9px] font-bold uppercase bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full">Global (TODOS)</span>
                                                         )}
                                                         {!regla.activa && (
-                                                            <span className="text-[9px] font-black uppercase bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full">Inactiva</span>
+                                                            <span className="text-[9px] font-bold uppercase bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full">Inactiva</span>
                                                         )}
                                                     </div>
-                                                    <h3 className="text-base font-black text-slate-800 leading-tight flex items-center gap-2">
+                                                    <h3 className="text-base font-bold text-slate-800 leading-tight flex items-center gap-2">
                                                         De {formatTime(regla.hora_inicio)} a {formatTime(regla.hora_fin)}
                                                         {regla.tipo === 'a_tiempo' ? (
-                                                            <span className="text-[9px] font-black uppercase bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200">A Tiempo</span>
+                                                            <span className="text-[9px] font-bold uppercase bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200">A Tiempo</span>
                                                         ) : (
-                                                            <span className="text-[9px] font-black uppercase bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full border border-orange-200">Retraso</span>
+                                                            <span className="text-[9px] font-bold uppercase bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full border border-orange-200">Retraso</span>
                                                         )}
                                                     </h3>
-                                                    <p className="text-sm font-bold text-slate-500 mt-0.5">Monto: <span className="text-primary">{formatMoney(regla.monto)}</span></p>
+                                                    <p className="text-sm font-semibold text-slate-500 mt-0.5">Monto: <span className="text-primary">{formatMoney(regla.monto)}</span></p>
                                                 </div>
                                             </div>
                                             

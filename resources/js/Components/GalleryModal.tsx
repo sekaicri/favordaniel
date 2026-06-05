@@ -105,7 +105,7 @@ export default function GalleryModal({
                 <a 
                     href={currentImage} 
                     download 
-                    className="bg-pink-600/20 border border-pink-600/40 text-white py-2.5 px-8 rounded-xl no-underline text-sm font-bold shadow-[0_4px_15px_rgba(233,30,99,0.2)] backdrop-blur-md transition-all duration-300 hover:bg-pink-600/40 hover:-translate-y-0.5"
+                    className="bg-pink-600/20 border border-pink-600/40 text-white py-2.5 px-8 rounded-xl no-underline text-sm font-semibold shadow-[0_4px_15px_rgba(233,30,99,0.2)] backdrop-blur-md transition-all duration-300 hover:bg-pink-600/40 hover:-translate-y-0.5"
                 >
                     Descargar Imagen
                 </a>

@@ -76,7 +76,7 @@ export default function RepartidoresIndex({ repartidores, filters = {} }: Repart
                             </svg>
                         </div>
                         <div>
-                            <h1 className="text-[2.5rem] font-bold text-[#e91e63] tracking-tight leading-tight mb-1" style={{ fontFamily:"'Montserrat',sans-serif" }}>Gestión de Repartidores</h1>
+                            <h1 className="text-[2.5rem] font-semibold text-[#e91e63] tracking-tight leading-tight mb-1" style={{ fontFamily:"'Montserrat',sans-serif" }}>Gestión de Repartidores</h1>
                             <p className="text-slate-500 text-lg font-medium">Visualiza los repartidores, sus entregas y desempeño</p>
                         </div>
                     </div>
@@ -85,7 +85,7 @@ export default function RepartidoresIndex({ repartidores, filters = {} }: Repart
                     <div className="flex shrink-0 mt-4 sm:mt-0 w-full sm:w-auto">
                         <Link 
                             href={route('admin.reglas')}
-                            className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-[#e91e63] text-white px-6 py-3.5 rounded-2xl font-bold shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                            className="w-full sm:w-auto bg-gradient-to-r from-[#e91e63] to-pink-400 text-white px-6 py-3.5 rounded-2xl font-semibold shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -100,7 +100,7 @@ export default function RepartidoresIndex({ repartidores, filters = {} }: Repart
             <div className="mb-6">
                 <form onSubmit={handleFilterSubmit} className="flex flex-col sm:flex-row gap-4 sm:items-end">
                     <div className="flex-1">
-                        <label className="text-xs font-bold text-slate-500 mb-2 block ml-1">Buscar repartidor</label>
+                        <label className="text-xs font-semibold text-slate-500 mb-2 block ml-1">Buscar repartidor</label>
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -128,13 +128,13 @@ export default function RepartidoresIndex({ repartidores, filters = {} }: Repart
                     <table className="w-full text-left whitespace-nowrap">
                         <thead>
                             <tr className="border-b border-slate-100">
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 font-sans tracking-wide uppercase">Repartidor</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Asignadas</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Entregadas</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Pendientes</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Avance</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Último acceso</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 text-center font-sans tracking-wide uppercase">Acciones</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 font-sans tracking-wide uppercase">Repartidor</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 text-center font-sans tracking-wide uppercase">Asignadas</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 text-center font-sans tracking-wide uppercase">Entregadas</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 text-center font-sans tracking-wide uppercase">Pendientes</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 text-center font-sans tracking-wide uppercase">Avance</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 text-center font-sans tracking-wide uppercase">Último acceso</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-700 text-center font-sans tracking-wide uppercase">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
@@ -146,7 +146,7 @@ export default function RepartidoresIndex({ repartidores, filters = {} }: Repart
                                     <tr key={driver.id} className="hover:bg-slate-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-[#e91e63]/10 text-[#e91e63] flex items-center justify-center font-bold text-xs shrink-0">
+                                                <div className="w-8 h-8 rounded-full bg-[#e91e63]/10 text-[#e91e63] flex items-center justify-center font-semibold text-xs shrink-0">
                                                     {driver.name.substring(0, 2).toUpperCase()}
                                                 </div>
                                                 <div className="flex flex-col">
@@ -169,7 +169,7 @@ export default function RepartidoresIndex({ repartidores, filters = {} }: Repart
                                                 <div className="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden">
                                                     <div className="bg-[#e91e63] h-1.5 rounded-full" style={{ width: `${pct}%` }}></div>
                                                 </div>
-                                                <span className="text-xs font-bold text-slate-500">{pct}%</span>
+                                                <span className="text-xs font-semibold text-slate-500">{pct}%</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-center text-sm text-slate-500">
@@ -178,7 +178,7 @@ export default function RepartidoresIndex({ repartidores, filters = {} }: Repart
                                         <td className="px-6 py-4 text-center">
                                             <Link
                                                 href={route('admin.repartidores.show', driver.id)}
-                                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-pink-50 hover:bg-pink-100 rounded-full transition-colors text-[#e91e63] text-xs font-bold no-underline"
+                                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-pink-50 hover:bg-pink-100 rounded-full transition-colors text-[#e91e63] text-xs font-semibold no-underline"
                                             >
                                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -212,11 +212,11 @@ export default function RepartidoresIndex({ repartidores, filters = {} }: Repart
                         <div key={driver.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-[#e91e63]/10 text-[#e91e63] flex items-center justify-center font-bold text-sm shrink-0">
+                                    <div className="w-10 h-10 rounded-full bg-[#e91e63]/10 text-[#e91e63] flex items-center justify-center font-semibold text-sm shrink-0">
                                         {driver.name.substring(0, 2).toUpperCase()}
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-sm text-slate-700 font-bold">{driver.name}</span>
+                                        <span className="text-sm text-slate-700 font-semibold">{driver.name}</span>
                                         <span className="text-xs text-slate-400">{driver.email}</span>
                                     </div>
                                 </div>
@@ -230,19 +230,19 @@ export default function RepartidoresIndex({ repartidores, filters = {} }: Repart
                             
                             <div className="grid grid-cols-2 gap-4 py-3 border-y border-slate-50">
                                 <div>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Entregas</p>
-                                    <p className="text-xs font-bold text-slate-700">{done} / {total}</p>
+                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Entregas</p>
+                                    <p className="text-xs font-semibold text-slate-700">{done} / {total}</p>
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Avance</p>
-                                    <p className="text-xs font-bold text-[#e91e63]">{pct}%</p>
+                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Avance</p>
+                                    <p className="text-xs font-semibold text-[#e91e63]">{pct}%</p>
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Teléfono</p>
+                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Teléfono</p>
                                     <p className="text-xs text-slate-600 font-medium">{driver.telefono || 'Sin registrar'}</p>
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Visto el</p>
+                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Visto el</p>
                                     <p className="text-xs text-slate-600 font-medium">{formatDate(driver.ultimo_acceso)}</p>
                                 </div>
                             </div>
@@ -277,7 +277,7 @@ export default function RepartidoresIndex({ repartidores, filters = {} }: Repart
                                 <button 
                                     key={idx}
                                     onClick={() => link.url ? router.get(link.url, filterState as any) : null}
-                                    className={`w-8 h-8 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-bold shrink-0 ${link.active ? 'bg-[#e91e63] text-white shadow-md' : 'text-[#e91e63] hover:bg-pink-50 border border-pink-100'}`}
+                                    className={`w-8 h-8 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-semibold shrink-0 ${link.active ? 'bg-[#e91e63] text-white shadow-md' : 'text-[#e91e63] hover:bg-pink-50 border border-pink-100'}`}
                                 >
                                     {link.label}
                                 </button>
@@ -287,10 +287,7 @@ export default function RepartidoresIndex({ repartidores, filters = {} }: Repart
                 </div>
             )}
             
-            <div className="flex flex-col sm:flex-row justify-between items-center text-[10px] text-slate-400 font-medium pb-8 px-2 gap-2 mt-4 sm:mt-0 text-center sm:text-left">
-                <span>© 2026 Celumovil Store. Todos los derechos reservados</span>
-                <span>Versión 1.0.0</span>
-            </div>
+
         </AppLayout>
     );
 }

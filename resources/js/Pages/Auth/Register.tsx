@@ -128,7 +128,7 @@ export default function Register() {
                         ¿Ya tienes una cuenta? {' '}
                         <Link
                             href={route('login')}
-                            className="text-[#e91e63] underline hover:text-[#c2185b] font-bold transition-colors"
+                            className="text-[#e91e63] underline hover:text-[#c2185b] font-semibold transition-colors"
                         >
                             Inicia Sesión aquí
                         </Link>

@@ -84,7 +84,7 @@ export default function RepartidorShow({ repartidor, stats, entregas, ganancias 
                 <div className="mb-6">
                     <Link
                         href={route('admin.repartidores')}
-                        className="inline-flex items-center gap-2 text-[#e91e63] font-bold text-sm no-underline hover:opacity-80 transition-opacity"
+                        className="inline-flex items-center gap-2 text-[#e91e63] font-semibold text-sm no-underline hover:opacity-80 transition-opacity"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
@@ -103,7 +103,7 @@ export default function RepartidorShow({ repartidor, stats, entregas, ganancias 
                             </svg>
                         </div>
                         <div>
-                            <h1 className="text-3xl font-bold text-slate-800 tracking-tight mb-1" style={{ fontFamily:"'Montserrat',sans-serif" }}>{repartidor.name}</h1>
+                            <h1 className="text-3xl font-semibold text-slate-800 tracking-tight mb-1" style={{ fontFamily:"'Montserrat',sans-serif" }}>{repartidor.name}</h1>
                             <p className="text-slate-400 text-sm font-medium">Gestión de evidencias en tiempo real</p>
                         </div>
                     </div>
@@ -116,8 +116,8 @@ export default function RepartidorShow({ repartidor, stats, entregas, ganancias 
                                 </svg>
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">Fecha y hora</span>
-                                <span className="text-sm font-bold text-slate-700">{formattedDate} - {formattedTime}</span>
+                                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Fecha y hora</span>
+                                <span className="text-sm font-semibold text-slate-700">{formattedDate} - {formattedTime}</span>
                             </div>
                         </div>
                     </div>
@@ -126,28 +126,28 @@ export default function RepartidorShow({ repartidor, stats, entregas, ganancias 
                 {/* Summary bar */}
                 <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-6 divide-y md:divide-y-0 md:divide-x divide-slate-100">
                     <div className="flex flex-col pr-6 pb-4 md:pb-0">
-                        <span className="text-base font-bold text-[#e91e63] mb-1">Resumen del Repartidor</span>
+                        <span className="text-base font-semibold text-[#e91e63] mb-1">Resumen del Repartidor</span>
                         <span className="text-slate-400 text-xs font-medium">Seguimiento de entregas asignadas</span>
                     </div>
 
                     <div className="flex flex-row flex-wrap md:flex-nowrap flex-1 justify-around pt-4 md:pt-0 gap-4">
                         <div className="text-center px-4">
-                            <span className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Total Asignadas</span>
+                            <span className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Total Asignadas</span>
                             <span className="text-2xl font-extrabold text-slate-700">{stats.total_asignadas}</span>
                         </div>
 
                         <div className="text-center px-4">
-                            <span className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Entregadas</span>
+                            <span className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Entregadas</span>
                             <span className="text-2xl font-extrabold text-green-600">{stats.entregadas}</span>
                         </div>
 
                         <div className="text-center px-4">
-                            <span className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Por Entregar</span>
+                            <span className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Por Entregar</span>
                             <span className="text-2xl font-extrabold text-orange-500">{stats.por_entregar}</span>
                         </div>
 
                         <div className="text-center px-4">
-                            <span className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Pendientes</span>
+                            <span className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Pendientes</span>
                             <span className="text-2xl font-extrabold text-indigo-500">{stats.pendientes}</span>
                         </div>
 
@@ -177,9 +177,9 @@ export default function RepartidorShow({ repartidor, stats, entregas, ganancias 
                                         fill="transparent"
                                     />
                                 </svg>
-                                <span className="absolute text-xs font-bold text-slate-700">{stats.avance_general}%</span>
+                                <span className="absolute text-xs font-semibold text-slate-700">{stats.avance_general}%</span>
                             </div>
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-tight">Avance<br />general</span>
+                            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider leading-tight">Avance<br />general</span>
                         </div>
                     </div>
                 </div>
@@ -194,19 +194,19 @@ export default function RepartidorShow({ repartidor, stats, entregas, ganancias 
                                 </svg>
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-slate-800" style={{ fontFamily:"'Montserrat',sans-serif" }}>Espacio de Ganancias</h3>
+                                <h3 className="text-lg font-semibold text-slate-800" style={{ fontFamily:"'Montserrat',sans-serif" }}>Espacio de Ganancias</h3>
                                 <p className="text-xs font-medium text-slate-400">Cálculo de cobro adeudado al repartidor</p>
                             </div>
                         </div>
 
                         <div className="flex items-center gap-8 bg-slate-50 px-6 py-3 rounded-2xl border border-slate-100">
                             <div className="text-center">
-                                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wide">Pago Estimado</span>
-                                <span className="text-xl font-black text-green-600">{formatCurrency(ganancias.estimadas)}</span>
+                                <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wide">Pago Estimado</span>
+                                <span className="text-xl font-bold text-green-600">{formatCurrency(ganancias.estimadas)}</span>
                             </div>
                             <div className="text-center border-l border-slate-200 pl-8">
-                                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wide">Tarifa por Entrega</span>
-                                <span className="text-sm font-bold text-slate-600">{formatCurrency(ganancias.valor_por_entrega)} / ord</span>
+                                <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wide">Tarifa por Entrega</span>
+                                <span className="text-sm font-semibold text-slate-600">{formatCurrency(ganancias.valor_por_entrega)} / ord</span>
                             </div>
                         </div>
                     </div>
@@ -223,9 +223,9 @@ export default function RepartidorShow({ repartidor, stats, entregas, ganancias 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Column: Por entregar */}
                     <div>
-                        <h2 className="text-xl font-bold text-[#e91e63] mb-4 flex items-center gap-2" style={{ fontFamily:"'Montserrat',sans-serif" }}>
+                        <h2 className="text-xl font-semibold text-[#e91e63] mb-4 flex items-center gap-2" style={{ fontFamily:"'Montserrat',sans-serif" }}>
                             Por entregar
-                            <span className="text-xs bg-[#e91e63]/10 text-[#e91e63] px-2 py-0.5 rounded-full font-bold">
+                            <span className="text-xs bg-[#e91e63]/10 text-[#e91e63] px-2 py-0.5 rounded-full font-semibold">
                                 {entregas.por_entregar.length}
                             </span>
                         </h2>
@@ -246,12 +246,12 @@ export default function RepartidorShow({ repartidor, stats, entregas, ganancias 
                                                     Por Entregar
                                                 </span>
                                                 {entrega.canal_compra && (
-                                                    <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                                                    <span className="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
                                                         {entrega.canal_compra}
                                                     </span>
                                                 )}
                                             </div>
-                                            <span className="text-sm font-bold text-slate-700">Guía # {entrega.tracking_id}</span>
+                                            <span className="text-sm font-semibold text-slate-700">Guía # {entrega.tracking_id}</span>
                                             <span className="text-xs text-slate-400 font-medium">Cliente: {entrega.cliente || 'Desconocido'}</span>
                                             <span className="text-[11px] text-red-500 font-semibold mt-1">Se entregará con retraso</span>
                                         </div>
@@ -275,9 +275,9 @@ export default function RepartidorShow({ repartidor, stats, entregas, ganancias 
 
                     {/* Right Column: Entregados */}
                     <div>
-                        <h2 className="text-xl font-bold text-[#e91e63] mb-4 flex items-center gap-2" style={{ fontFamily:"'Montserrat',sans-serif" }}>
+                        <h2 className="text-xl font-semibold text-[#e91e63] mb-4 flex items-center gap-2" style={{ fontFamily:"'Montserrat',sans-serif" }}>
                             Entregados
-                            <span className="text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded-full font-bold">
+                            <span className="text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded-full font-semibold">
                                 {entregas.entregados.length}
                             </span>
                         </h2>
@@ -311,12 +311,12 @@ export default function RepartidorShow({ repartidor, stats, entregas, ganancias 
                                                         Entregado
                                                     </span>
                                                     {entrega.canal_compra && (
-                                                        <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                                                        <span className="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
                                                             {entrega.canal_compra}
                                                         </span>
                                                     )}
                                                 </div>
-                                                <span className="text-sm font-bold text-slate-700">Guía # {entrega.tracking_id}</span>
+                                                <span className="text-sm font-semibold text-slate-700">Guía # {entrega.tracking_id}</span>
                                                 <span className="text-xs text-slate-400 font-medium">Entregado: {dateFormatted} - {timeFormatted}</span>
                                                 <span className="text-[11px] text-green-600 font-semibold mt-1">Entregado con retraso</span>
                                             </div>

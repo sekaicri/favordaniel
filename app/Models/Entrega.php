@@ -26,6 +26,8 @@ class Entrega extends Model
         'delivered_at',
         'ganancia',
         'condicion_tiempo',
+        'motivo_bloqueo',
+        'intentos_fallidos',
     ];
 
     const PALABRAS_CLAVE = [
