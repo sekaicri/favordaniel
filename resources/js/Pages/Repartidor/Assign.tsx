@@ -12,7 +12,7 @@ export default function Assign({ auth, flash, entregas = [] }: any) {
     // Auto-refresh (Polling) cada 5 segundos para actualización en tiempo real de las entregas
     useEffect(() => {
         const interval = setInterval(() => {
-            router.reload({ only: ['entregas'], preserveState: true, preserveScroll: true });
+            router.reload({ only: ['entregas'] });
         }, 5000);
         return () => clearInterval(interval);
     }, []);

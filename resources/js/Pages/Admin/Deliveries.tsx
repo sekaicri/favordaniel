@@ -24,6 +24,7 @@ interface Entrega {
     palabra_clave?: string | null;
     canal_compra?: string | null;
     condicion_actual?: string;
+    motivo_bloqueo?: string | null;
 }
 
 interface PaginatedData<T> {
@@ -126,7 +127,7 @@ export default function AdminDeliveries({ entregas, repartidores, filters = {} }
 
     const leftColumnList = activeTab === 'por_entregar' ? porEntregar : (activeTab === 'por_asignar' ? porAsignar : alertas);
 
-    const getCanalBadge = (canal: string | null) => {
+    const getCanalBadge = (canal: string | null | undefined) => {
         if (!canal) return null;
         const lower = canal.toLowerCase();
         let bg = 'bg-slate-100 text-slate-600';
