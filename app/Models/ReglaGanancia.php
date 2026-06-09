@@ -22,6 +22,26 @@ class ReglaGanancia extends Model
         'monto' => 'decimal:2',
     ];
 
+    /** Find the active earning rule for a user at a given time (user-specific first, then global fallback). */
+    public static function buscarActivaPara(?int $userId, string $hora): ?self
+    {
+        $regla = static::where('activa', true)
+            ->where('user_id', $userId)
+            ->where('hora_inicio', '<=', $hora)
+            ->where('hora_fin', '>=', $hora)
+            ->first();
+
+        if (!$regla) {
+            $regla = static::where('activa', true)
+                ->whereNull('user_id')
+                ->where('hora_inicio', '<=', $hora)
+                ->where('hora_fin', '>=', $hora)
+                ->first();
+        }
+
+        return $regla;
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -8,20 +8,23 @@ use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use App\Models\User;
 use App\Models\Entrega;
+use App\Models\ReglaGanancia;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Services\GoogleSheetsSyncService;
+use App\Services\EntregaService;
 
 class AdminController extends Controller
 {
-    /**
-     * Web: Panel Admin (Gestión de usuarios).
-     */
+    public function __construct(
+        protected EntregaService $entregaService
+    ) {}
+
+    /** Users management index. */
     public function usersIndex(Request $request)
     {
         $query = User::query();
 
-        // Filtrar por búsqueda de texto
         if ($request->has('search') && $request->search != '') {
             $query->where(function($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
@@ -30,12 +33,10 @@ class AdminController extends Controller
             });
         }
 
-        // Filtrar por rol
         if ($request->has('role') && $request->role != '') {
             $query->where('role', $request->role);
         }
 
-        // Filtrar por estado
         if ($request->has('estado') && $request->estado != '') {
             $query->where('estado', $request->estado === 'activo');
         }
@@ -48,9 +49,7 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Web: Formulario para crear nuevo usuario.
-     */
+    /** Create user form. */
     public function usersCreate()
     {
         return Inertia::render('Admin/UserForm', [
@@ -59,9 +58,7 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * API: Guardar nuevo usuario.
-     */
+    /** Store new user. */
     public function usersStore(StoreUserRequest $request)
     {
         User::create([
@@ -77,9 +74,7 @@ class AdminController extends Controller
         return redirect()->route('admin.usuarios')->with('status', '¡Usuario creado exitosamente!');
     }
 
-    /**
-     * Web: Formulario para editar usuario existente.
-     */
+    /** Edit user form. */
     public function usersEdit(User $user)
     {
         return Inertia::render('Admin/UserForm', [
@@ -88,9 +83,7 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * API: Actualizar usuario existente.
-     */
+    /** Update existing user. */
     public function usersUpdate(UpdateUserRequest $request, User $user)
     {
         $data = [
@@ -111,12 +104,9 @@ class AdminController extends Controller
         return redirect()->route('admin.usuarios')->with('status', '¡Usuario actualizado exitosamente!');
     }
 
-    /**
-     * API: Eliminar usuario existente.
-     */
+    /** Delete user (prevents self-deletion). */
     public function usersDestroy(User $user)
     {
-        // Evitar que el administrador se elimine a sí mismo
         if (Auth::id() === $user->id) {
             return redirect()->route('admin.usuarios')->with('status', 'No puedes eliminar tu propia cuenta.');
         }
@@ -126,14 +116,11 @@ class AdminController extends Controller
         return redirect()->route('admin.usuarios')->with('status', '¡Usuario eliminado exitosamente!');
     }
 
-    /**
-     * Web: Panel Admin (Gestión de entregas de todos los repartidores).
-     */
+    /** Deliveries dashboard — loads active rules once to avoid N+1. */
     public function deliveriesIndex(Request $request)
     {
         $query = Entrega::with('user');
 
-        // Filtrar por búsqueda (Tracking ID o Nombre del repartidor o cliente)
         if ($request->has('search') && $request->search != '') {
             $query->where(function($q) use ($request) {
                 $q->where('tracking_id', 'like', '%' . $request->search . '%')
@@ -144,12 +131,10 @@ class AdminController extends Controller
             });
         }
 
-        // Filtrar por fecha
         if ($request->has('fecha') && $request->fecha != '') {
             $query->whereDate('created_at', $request->fecha);
         }
 
-        // Filtrar por estado
         if ($request->has('estado') && $request->estado != '') {
             if ($request->estado === 'por_asignar') {
                 $query->whereNull('user_id');
@@ -160,37 +145,28 @@ class AdminController extends Controller
             }
         }
 
-        // Filtrar por canal de compra
         if ($request->has('canal_compra') && $request->canal_compra != '') {
             $query->where('canal_compra', 'LIKE', '%' . $request->canal_compra . '%');
         }
 
-        $entregas = $query->orderBy('created_at', 'desc')->paginate(50); // Increased pagination for better dashboard view
+        $entregas = $query->orderBy('created_at', 'desc')->paginate(50);
 
-        // Calcular condición de tiempo actual para las pendientes
+        // Evaluate time condition in-memory (single query for all active rules)
         $currentTime = \Carbon\Carbon::now()->format('H:i:s');
+        $reglasActivas = ReglaGanancia::where('activa', true)
+            ->where('hora_inicio', '<=', $currentTime)
+            ->where('hora_fin', '>=', $currentTime)
+            ->get();
+
         foreach ($entregas->items() as $entrega) {
             if ($entrega->estado !== 'entregado') {
-                $regla = \App\Models\ReglaGanancia::where('activa', true)
-                    ->where('user_id', $entrega->user_id)
-                    ->where('hora_inicio', '<=', $currentTime)
-                    ->where('hora_fin', '>=', $currentTime)
-                    ->first();
-                
+                $regla = $reglasActivas->firstWhere('user_id', $entrega->user_id);
                 if (!$regla) {
-                    $regla = \App\Models\ReglaGanancia::where('activa', true)
-                        ->whereNull('user_id')
-                        ->where('hora_inicio', '<=', $currentTime)
-                        ->where('hora_fin', '>=', $currentTime)
-                        ->first();
+                    $regla = $reglasActivas->whereNull('user_id')->first();
                 }
-
                 $entrega->condicion_actual = $regla ? $regla->tipo : 'fuera_rango';
             }
         }
-
-        // El redireccionamiento automático se ha eliminado para que la vista principal (Admin/Deliveries)
-        // se encargue de renderizar el detalle si solo hay un resultado.
 
         $repartidores = User::where('role', 'repartidor')->get(['id', 'name']);
 
@@ -201,56 +177,36 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Web: Vista de detalle de una entrega para el Administrador.
-     */
+    /** Delivery detail view. */
     public function showDelivery(Entrega $entrega)
     {
-        // Cargar la relación del repartidor
         $entrega->load('user');
-        
+
         return Inertia::render('Admin/DeliveryDetail', [
             'entrega' => $entrega
         ]);
     }
 
-    /**
-     * API: Asignar repartidor a una entrega.
-     */
+    /** Assign a driver to a delivery. */
     public function assignDelivery(Request $request, Entrega $entrega)
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
         ]);
 
-        $entrega->update([
-            'user_id' => $request->user_id,
-            'estado' => 'pendiente', // O el estado que represente "Por entregar"
-        ]);
-
-        // Disparar mensaje de WhatsApp de asignación
-        $msg = "Hola Celulover, vamos en camino a llevarte tu pedido.\nNo olvides tu palabra clave!";
-        app(\App\Services\WhatsAppService::class)->send($entrega->celular, $msg);
+        $this->entregaService->asignarRepartidor($entrega, $request->user_id);
 
         return redirect()->back()->with('status', 'Repartidor asignado correctamente.');
     }
 
-    /**
-     * API: Desasignar repartidor de una entrega.
-     */
+    /** Unassign a driver from a delivery. */
     public function unassignDelivery(Entrega $entrega)
     {
-        $entrega->update([
-            'user_id' => null,
-            'estado' => 'pendiente',
-        ]);
+        $this->entregaService->desasignarRepartidor($entrega);
 
         return redirect()->back()->with('status', 'Repartidor desasignado correctamente.');
     }
 
-    /**
-     * Retorna los roles disponibles del sistema.
-     */
     private function getAvailableRoles(): array
     {
         return [
@@ -264,26 +220,22 @@ class AdminController extends Controller
         ];
     }
 
-    /**
-     * API: Sincronizar entregas manualmente desde Google Sheets
-     */
+    /** Sync deliveries from Google Sheets. */
     public function syncSheets(GoogleSheetsSyncService $syncService)
     {
         $result = $syncService->syncDailyDeliveries();
-        
+
         if ($result['success']) {
             return redirect()->back()->with('status', $result['message']);
         } else {
             return redirect()->back()->withErrors(['error' => $result['message']]);
         }
     }
-    // ==========================================
-    // MOTOR DE REGLAS DE GANANCIA
-    // ==========================================
 
+    /** Earning rules index. */
     public function reglasIndex()
     {
-        $reglas = \App\Models\ReglaGanancia::with('user')->orderBy('hora_inicio')->get();
+        $reglas = ReglaGanancia::with('user')->orderBy('hora_inicio')->get();
         $repartidores = User::where('role', 'repartidor')->get(['id', 'name']);
 
         return Inertia::render('Admin/ReglasGanancia', [
@@ -292,6 +244,7 @@ class AdminController extends Controller
         ]);
     }
 
+    /** Store earning rule. */
     public function storeRegla(Request $request)
     {
         $data = $request->validate([
@@ -302,12 +255,13 @@ class AdminController extends Controller
             'tipo' => 'required|in:a_tiempo,retraso',
         ]);
 
-        \App\Models\ReglaGanancia::create($data);
+        ReglaGanancia::create($data);
 
         return redirect()->back()->with('status', 'Regla de ganancia creada exitosamente.');
     }
 
-    public function updateRegla(Request $request, \App\Models\ReglaGanancia $regla)
+    /** Update earning rule. */
+    public function updateRegla(Request $request, ReglaGanancia $regla)
     {
         $data = $request->validate([
             'user_id' => 'nullable|exists:users,id',
@@ -323,7 +277,8 @@ class AdminController extends Controller
         return redirect()->back()->with('status', 'Regla actualizada correctamente.');
     }
 
-    public function destroyRegla(\App\Models\ReglaGanancia $regla)
+    /** Delete earning rule. */
+    public function destroyRegla(ReglaGanancia $regla)
     {
         $regla->delete();
         return redirect()->back()->with('status', 'Regla eliminada.');

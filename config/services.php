@@ -33,4 +33,13 @@ return [
         'super_admin_email' => env('SUPER_ADMIN_EMAIL', 'hola@celumovilstore.com.co'),
     ],
 
+    'whatsapp' => [
+        'api_key' => env('WHATSAPP_API_KEY', ''),
+    ],
+
+    'google_sheets' => [
+        'spreadsheet_id' => env('GOOGLE_SHEETS_SPREADSHEET_ID'),
+        'credentials_path' => env('GOOGLE_SHEETS_CREDENTIALS_PATH', 'storage/app/google-credentials.json'),
+    ],
+
 ];

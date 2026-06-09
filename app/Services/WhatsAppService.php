@@ -5,55 +5,49 @@ namespace App\Services;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
+/** Sends WhatsApp messages via CallMeBot API. */
 class WhatsAppService
 {
-    /**
-     * El número oficial corporativo configurado para envíos.
-     */
-    const SENDER_NUMBER = '+57 3102194973';
+    protected string $apiKey;
 
-    /**
-     * Envía un mensaje de WhatsApp (Modo Real vía CallMeBot)
-     *
-     * @param string|null $to
-     * @param string $message
-     * @return bool
-     */
+    public function __construct()
+    {
+        $this->apiKey = config('services.whatsapp.api_key', '');
+    }
+
     public function send(?string $to, string $message): bool
     {
         if (empty($to)) {
-            Log::warning("[WhatsApp] Intento de envío fallido: Cliente no tiene un número celular válido registrado.");
+            Log::warning("[WhatsApp] No phone number provided, skipping.");
             return false;
         }
 
-        // Limpiamos el número de teléfono para que sólo tenga números y el símbolo +
+        // Clean phone number — digits and + only
         $cleanTo = preg_replace('/[^0-9+]/', '', $to);
-        
-        // Si el número no tiene el prefijo de país (asumiendo Colombia +57 si empieza por 3)
+
+        // Default to Colombia (+57) if no country code
         if (strpos($cleanTo, '+') === false && substr($cleanTo, 0, 1) === '3') {
             $cleanTo = '+57' . $cleanTo;
         }
 
-        // API Key de CallMeBot
-        $apiKey = '5669230';
-        
-        // Formatear el texto
-        $urlEncodedMessage = urlencode($message);
-        
-        $url = "https://api.callmebot.com/whatsapp.php?phone={$cleanTo}&text={$urlEncodedMessage}&apikey={$apiKey}";
+        $url = "https://api.callmebot.com/whatsapp.php?" . http_build_query([
+            'phone' => $cleanTo,
+            'text' => $message,
+            'apikey' => $this->apiKey,
+        ]);
 
         try {
             $response = Http::get($url);
-            
+
             if ($response->successful()) {
-                Log::info("[WhatsApp Real] Mensaje enviado a {$cleanTo} exitosamente vía CallMeBot.");
+                Log::info("[WhatsApp] Message sent to {$cleanTo}.");
                 return true;
-            } else {
-                Log::error("[WhatsApp Real] Error enviando mensaje a {$cleanTo}. Response: " . $response->body());
-                return false;
             }
+
+            Log::error("[WhatsApp] Failed to send to {$cleanTo}: " . $response->body());
+            return false;
         } catch (\Exception $e) {
-            Log::error("[WhatsApp Real] Excepción enviando mensaje: " . $e->getMessage());
+            Log::error("[WhatsApp] Exception: " . $e->getMessage());
             return false;
         }
     }
